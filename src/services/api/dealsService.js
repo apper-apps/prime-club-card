@@ -37,6 +37,7 @@ export const createDeal = async (dealData) => {
   const maxId = Math.max(...deals.map(d => d.Id));
   const newDeal = {
     ...dealData,
+    leadName: dealData.leadName || dealData.name || "Unknown Lead",
     Id: maxId + 1,
     createdAt: new Date().toISOString()
   };
