@@ -670,33 +670,35 @@ const handleSort = (field) => {
         duration: 0.3
     }}
     className="space-y-6">
-    {/* Header */}
-    <div
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-            <h1 className="text-2xl font-bold text-gray-900">Leads</h1>
-            <p className="text-gray-600">Manage your lead pipeline and track opportunities</p>
+{/* Header */}
+    <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center">
+        <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Leads</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">Manage your lead pipeline and track opportunities</p>
         </div>
-        <Button
-            onClick={() => setShowAddForm(true)}
-            variant="outline"
-            className="shrink-0">
-            <ApperIcon name="Plus" size={16} className="mr-2" />Add New Lead
-                    </Button>
+        <div className="flex-shrink-0">
+            <Button
+                onClick={() => setShowAddForm(true)}
+                variant="outline"
+                className="w-full sm:w-auto">
+                <ApperIcon name="Plus" size={16} className="mr-2" />
+                <span className="whitespace-nowrap">Add New Lead</span>
+            </Button>
+        </div>
     </div>
-    {/* Search and Filters */}
-    <Card className="p-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
+{/* Search and Filters */}
+    <Card className="p-3 sm:p-4">
+        <div className="space-y-4">
+            <div className="w-full">
                 <SearchBar
                     placeholder="Search by website, category, or team size..."
                     onSearch={setSearchTerm} />
-</div>
-            <div className="flex flex-col sm:flex-row gap-2">
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <select
                     value={statusFilter}
                     onChange={e => setStatusFilter(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="all">All Statuses</option>
                     <option value="Launched on AppSumo">Launched on AppSumo</option>
                     <option value="Launched on Prime Club">Launched on Prime Club</option>
@@ -716,7 +718,7 @@ const handleSort = (field) => {
                 <select
                     value={fundingFilter}
                     onChange={e => setFundingFilter(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="all">All Funding Types</option>
                     <option value="Bootstrapped">Bootstrapped</option>
                     <option value="Pre-seed">Pre-seed</option>
@@ -729,7 +731,7 @@ const handleSort = (field) => {
                 <select
                     value={categoryFilter}
                     onChange={e => setCategoryFilter(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="all">All Categories</option>
                     {categoryOptions.map(category => (
                         <option key={category} value={category}>{category}</option>
@@ -738,7 +740,7 @@ const handleSort = (field) => {
                 <select
                     value={teamSizeFilter}
                     onChange={e => setTeamSizeFilter(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="all">All Team Sizes</option>
                     {teamSizeOptions.map(size => (
                         <option key={size} value={size}>{size}</option>
@@ -1350,21 +1352,20 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) 
     });
   };
 
-  return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div className="flex items-center justify-between p-6 border-b">
+return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b">
           <h3 className="text-lg font-semibold">Add New Lead</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-full">
             <ApperIcon name="X" size={20} />
           </button>
         </div>
-        
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+<form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Website URL
-</label>
+            </label>
             <Input
               type="url"
               value={formData.websiteUrl}
@@ -1372,42 +1373,44 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) 
               urlPrefix="https://"
               onChange={(e) => setFormData({...formData, websiteUrl: e.target.value})}
               placeholder="https://example.com"
+              className="w-full"
               required
             />
           </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Team Size
-</label>
-            <select
-              value={formData.teamSize}
-              onChange={(e) => setFormData({...formData, teamSize: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-<option value="1-3">1-3</option>
-              <option value="4-10">4-10</option>
-              <option value="11-50">11-50</option>
-              <option value="51-100">51-100</option>
-              <option value="101-500">101-500</option>
-              <option value="500+">500+</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              ARR (USD)
-            </label>
-            <Input
-              type="number"
-              value={formData.arr}
-              onChange={(e) => setFormData({...formData, arr: e.target.value})}
-              placeholder="150000"
-              required
-            />
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Team Size
+              </label>
+              <select
+                value={formData.teamSize}
+                onChange={(e) => setFormData({...formData, teamSize: e.target.value})}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              >
+                <option value="1-3">1-3</option>
+                <option value="4-10">4-10</option>
+                <option value="11-50">11-50</option>
+                <option value="51-100">51-100</option>
+                <option value="101-500">101-500</option>
+                <option value="500+">500+</option>
+              </select>
+            </div>
+<div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                ARR (USD)
+              </label>
+              <Input
+                type="number"
+                value={formData.arr}
+                onChange={(e) => setFormData({...formData, arr: e.target.value})}
+                placeholder="150000"
+                className="w-full"
+                required
+              />
+            </div>
           </div>
 <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Category
             </label>
             <div className="relative">
@@ -1421,9 +1424,8 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) 
               />
             </div>
           </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+<div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               LinkedIn URL
             </label>
             <Input
@@ -1431,63 +1433,63 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) 
               value={formData.linkedinUrl}
               onChange={(e) => setFormData({...formData, linkedinUrl: e.target.value})}
               placeholder="https://linkedin.com/company/example"
+              className="w-full"
               required
             />
           </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              value={formData.status}
-              onChange={(e) => setFormData({...formData, status: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
->
-              <option value="Launched on AppSumo">Launched on AppSumo</option>
-              <option value="Launched on Prime Club">Launched on Prime Club</option>
-              <option value="Keep an Eye">Keep an Eye</option>
-              <option value="Rejected">Rejected</option>
-              <option value="Unsubscribed">Unsubscribed</option>
-              <option value="Outdated">Outdated</option>
-              <option value="Hotlist">Hotlist</option>
-              <option value="Out of League">Out of League</option>
-              <option value="Connected">Connected</option>
-              <option value="Locked">Locked</option>
-              <option value="Meeting Booked">Meeting Booked</option>
-              <option value="Meeting Done">Meeting Done</option>
-              <option value="Negotiation">Negotiation</option>
-              <option value="Closed Lost">Closed Lost</option>
-            </select>
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              >
+                <option value="Launched on AppSumo">Launched on AppSumo</option>
+                <option value="Launched on Prime Club">Launched on Prime Club</option>
+                <option value="Keep an Eye">Keep an Eye</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Unsubscribed">Unsubscribed</option>
+                <option value="Outdated">Outdated</option>
+                <option value="Hotlist">Hotlist</option>
+                <option value="Out of League">Out of League</option>
+                <option value="Connected">Connected</option>
+                <option value="Locked">Locked</option>
+                <option value="Meeting Booked">Meeting Booked</option>
+                <option value="Meeting Done">Meeting Done</option>
+                <option value="Negotiation">Negotiation</option>
+                <option value="Closed Lost">Closed Lost</option>
+              </select>
+            </div>
+<div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Funding Type
+              </label>
+              <select
+                value={formData.fundingType}
+                onChange={(e) => setFormData({...formData, fundingType: e.target.value})}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              >
+                <option value="Bootstrapped">Bootstrapped</option>
+                <option value="Pre-seed">Pre-seed</option>
+                <option value="Y Combinator">Y Combinator</option>
+                <option value="Angel">Angel</option>
+                <option value="Series A">Series A</option>
+                <option value="Series B">Series B</option>
+                <option value="Series C">Series C</option>
+              </select>
+            </div>
           </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Funding Type
-            </label>
-            <select
-              value={formData.fundingType}
-              onChange={(e) => setFormData({...formData, fundingType: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="Bootstrapped">Bootstrapped</option>
-              <option value="Pre-seed">Pre-seed</option>
-              <option value="Y Combinator">Y Combinator</option>
-              <option value="Angel">Angel</option>
-              <option value="Series A">Series A</option>
-              <option value="Series B">Series B</option>
-              <option value="Series C">Series C</option>
-</select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+<div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Edition
             </label>
             <select
               value={formData.edition}
               onChange={(e) => setFormData({...formData, edition: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
             >
               <option value="Select Edition">Select Edition</option>
               <option value="Black Edition">Black Edition</option>
@@ -1495,12 +1497,11 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) 
               <option value="Limited Edition">Limited Edition</option>
             </select>
           </div>
-          
-          <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+<div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+            <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" className="w-full sm:w-auto order-1 sm:order-2">
               Add Lead
             </Button>
           </div>
@@ -1530,20 +1531,18 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
     });
   };
 
-  return (
-    <div
-    className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div className="flex items-center justify-between p-6 border-b">
-            <h3 className="text-lg font-semibold">Edit Lead</h3>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                <ApperIcon name="X" size={20} />
-            </button>
+return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+          <h3 className="text-lg font-semibold">Edit Lead</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-full">
+            <ApperIcon name="X" size={20} />
+          </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+<form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Website URL
-                                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Website URL</label>
                 <Input
                     type="url"
                     value={formData.websiteUrl}
@@ -1553,30 +1552,29 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
                         ...formData,
                         websiteUrl: e.target.value
                     })}
-required />
+                    className="w-full"
+                    required />
             </div>
-            
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Team Size
-                </label>
-                <select
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Team Size</label>
+                    <select
                         value={formData.teamSize}
                         onChange={e => setFormData({
                             ...formData,
                             teamSize: e.target.value
-})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
-<option value="1-3">1-3</option>
-                    <option value="4-10">4-10</option>
+                        })}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                        <option value="1-3">1-3</option>
+                        <option value="4-10">4-10</option>
                         <option value="11-50">11-50</option>
                         <option value="51-100">51-100</option>
                         <option value="101-500">101-500</option>
                         <option value="500+">500+</option>
                     </select>
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">ARR (USD)
-                                    </label>
+<div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">ARR (USD)</label>
                     <Input
                         type="number"
                         value={formData.arr}
@@ -1584,50 +1582,48 @@ required />
                             ...formData,
                             arr: e.target.value
                         })}
+                        className="w-full"
                         required />
-</div>
-            
-            <div>
-<label className="block text-sm font-medium text-gray-700 mb-1">Category
-                </label>
+                </div>
+            </div>
+<div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                 <div className="relative">
                     <SearchableSelect
                         value={formData.category}
                         onChange={(value) => setFormData({
                             ...formData,
-                                category: value
-                            })}
-                            options={categoryOptions}
-                            placeholder="Select category..."
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            onCreateCategory={onCreateCategory}
-                        />
+                            category: value
+                        })}
+                        options={categoryOptions}
+                        placeholder="Select category..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        onCreateCategory={onCreateCategory}
+                    />
                 </div>
             </div>
-            
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL
-                                    </label>
-                    <Input
-                        type="url"
-                        value={formData.linkedinUrl}
-                        onChange={e => setFormData({
-                            ...formData,
-                            linkedinUrl: e.target.value
-                        })}
-required />
+<div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn URL</label>
+                <Input
+                    type="url"
+                    value={formData.linkedinUrl}
+                    onChange={e => setFormData({
+                        ...formData,
+                        linkedinUrl: e.target.value
+                    })}
+                    className="w-full"
+                    required />
             </div>
-            
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status
-                                    </label>
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                     <select
                         value={formData.status}
                         onChange={e => setFormData({
                             ...formData,
                             status: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                         <option value="Launched on AppSumo">Launched on AppSumo</option>
                         <option value="Launched on Prime Club">Launched on Prime Club</option>
                         <option value="Keep an Eye">Keep an Eye</option>
@@ -1642,55 +1638,51 @@ required />
                         <option value="Meeting Done">Meeting Done</option>
                         <option value="Negotiation">Negotiation</option>
                         <option value="Closed Lost">Closed Lost</option>
-</select>
-            </div>
-            
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Funding Type
-                                    </label>
+                    </select>
+                </div>
+<div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Funding Type</label>
                     <select
                         value={formData.fundingType}
                         onChange={e => setFormData({
                             ...formData,
                             fundingType: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                         <option value="Bootstrapped">Bootstrapped</option>
                         <option value="Pre-seed">Pre-seed</option>
                         <option value="Y Combinator">Y Combinator</option>
                         <option value="Angel">Angel</option>
                         <option value="Series A">Series A</option>
                         <option value="Series B">Series B</option>
-<option value="Series C">Series C</option>
+                        <option value="Series C">Series C</option>
                     </select>
+                </div>
             </div>
-            
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Edition
-                                    </label>
-                    <select
-                        value={formData.edition}
-                        onChange={e => setFormData({
-                            ...formData,
-                            edition: e.target.value
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        <option value="Select Edition">Select Edition</option>
-                        <option value="Black Edition">Black Edition</option>
-                        <option value="Collector's Edition">Collector's Edition</option>
-                        <option value="Limited Edition">Limited Edition</option>
-</select>
+<div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Edition</label>
+                <select
+                    value={formData.edition}
+                    onChange={e => setFormData({
+                        ...formData,
+                        edition: e.target.value
+                    })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                    <option value="Select Edition">Select Edition</option>
+                    <option value="Black Edition">Black Edition</option>
+                    <option value="Collector's Edition">Collector's Edition</option>
+                    <option value="Limited Edition">Limited Edition</option>
+                </select>
             </div>
-            
-            <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={onClose}>
+<div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+                <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
                     Cancel
                 </Button>
-                <Button type="submit">
+                <Button type="submit" className="w-full sm:w-auto order-1 sm:order-2">
                     Update Lead
                 </Button>
             </div>
-</form>
+        </form>
     </div>
 </div>
   );
