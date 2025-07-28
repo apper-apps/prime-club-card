@@ -30,7 +30,6 @@ const [searchTerm, setSearchTerm] = useState("");
   const [nextTempId, setNextTempId] = useState(-1);
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
-const [topScrollbarRef, setTopScrollbarRef] = useState(null);
   const [tableScrollbarRef, setTableScrollbarRef] = useState(null);
 
   useEffect(() => {
@@ -38,25 +37,6 @@ const [topScrollbarRef, setTopScrollbarRef] = useState(null);
   }, []);
 
   // Synchronize scrolling between top and bottom scrollbars
-  useEffect(() => {
-    if (!topScrollbarRef || !tableScrollbarRef) return;
-
-    const handleTopScroll = () => {
-      tableScrollbarRef.scrollLeft = topScrollbarRef.scrollLeft;
-    };
-
-    const handleTableScroll = () => {
-      topScrollbarRef.scrollLeft = tableScrollbarRef.scrollLeft;
-    };
-
-    topScrollbarRef.addEventListener('scroll', handleTopScroll);
-    tableScrollbarRef.addEventListener('scroll', handleTableScroll);
-
-    return () => {
-      topScrollbarRef.removeEventListener('scroll', handleTopScroll);
-      tableScrollbarRef.removeEventListener('scroll', handleTableScroll);
-    };
-  }, [topScrollbarRef, tableScrollbarRef]);
 
 const loadLeads = async () => {
     try {
@@ -757,15 +737,6 @@ const handleSort = (field) => {
             actionText="Add Lead"
             onAction={() => setShowAddForm(true)}
 icon="Building2" /> : <div className="relative">
-            {/* Top scrollbar for easier horizontal navigation */}
-            <div 
-              ref={setTopScrollbarRef}
-              className="top-scrollbar overflow-x-auto border-b border-gray-200 bg-gray-50 mb-0"
-              style={{ height: '17px' }}
-            >
-              <div className="top-scrollbar-content" style={{ width: '1200px', height: '1px' }}></div>
-            </div>
-            
             <div 
               ref={setTableScrollbarRef}
               className="overflow-x-auto"
