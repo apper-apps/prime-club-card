@@ -395,6 +395,15 @@ let filtered = leads.filter(lead => {
                   </th>
                   <th className="text-left p-4">
                     <button
+                      onClick={() => handleSort('productName')}
+                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      Product Name
+                      <ApperIcon name="ArrowUpDown" size={14} />
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
                       onClick={() => handleSort('name')}
                       className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
                     >
@@ -474,43 +483,7 @@ let filtered = leads.filter(lead => {
                       <ApperIcon name="ArrowUpDown" size={14} />
                     </button>
                   </th>
-                  <th className="text-left p-4">
-<button
-                      onClick={() => handleSort('productName')}
-                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
-                    >
-                      Product Name
-                      <ApperIcon name="ArrowUpDown" size={14} />
-                    </button>
-                  </th>
-                  <th className="text-left p-4">
-                    <button
-                      onClick={() => handleSort('teamSize')}
-                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
-                    >
-                      Team Size
-                      <ApperIcon name="ArrowUpDown" size={14} />
-                    </button>
-                  </th>
-                  <th className="text-left p-4">
-                    <button
-                      onClick={() => handleSort('arr')}
-                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
-                    >
-                      ARR
-                      <ApperIcon name="ArrowUpDown" size={14} />
-                    </button>
-                  </th>
                   <th className="text-left p-4">LinkedIn</th>
-                  <th className="text-left p-4">
-                    <button
-                      onClick={() => handleSort('fundingType')}
-                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
-                    >
-                      Funding Type
-                      <ApperIcon name="ArrowUpDown" size={14} />
-                    </button>
-                  </th>
                   <th className="text-left p-4">
                     <button
                       onClick={() => handleSort('followUpDate')}
