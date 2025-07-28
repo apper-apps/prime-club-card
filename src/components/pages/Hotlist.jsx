@@ -245,13 +245,14 @@ const Hotlist = () => {
   const statusOptions = ['Launched on AppSumo', 'Launched on Prime Club', 'Keep an Eye', 'Rejected', 'Unsubscribed', 'Outdated', 'Hotlist', 'Out of League', 'Connected', 'Locked', 'Meeting Booked', 'Meeting Done', 'Negotiation', 'Closed Lost'];
   const fundingTypeOptions = ['Bootstrapped', 'Pre-seed', 'Y Combinator', 'Seed', 'Series A', 'Series B', 'Series C'];
 
-  const filteredAndSortedData = React.useMemo(() => {
+const filteredAndSortedData = React.useMemo(() => {
     let filtered = leads.filter(lead => {
       const matchesSearch = !searchQuery || 
+        lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.websiteUrl.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.addedByName.toLowerCase().includes(searchQuery.toLowerCase());
-      
       const matchesStatus = !statusFilter || lead.status === statusFilter;
       const matchesFunding = !fundingFilter || lead.fundingType === fundingFilter;
       
@@ -381,7 +382,7 @@ const Hotlist = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
+<thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left p-4">
                     <input
@@ -390,6 +391,24 @@ const Hotlist = () => {
                       onChange={toggleSelectAll}
                       className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('name')}
+                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      Name
+                      <ApperIcon name="ArrowUpDown" size={14} />
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('email')}
+                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      Email
+                      <ApperIcon name="ArrowUpDown" size={14} />
+                    </button>
                   </th>
                   <th className="text-left p-4">
                     <button
@@ -467,7 +486,7 @@ const Hotlist = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredAndSortedData.map((lead) => (
+{filteredAndSortedData.map((lead) => (
                   <tr key={lead.Id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="p-4">
                       <input
@@ -475,6 +494,24 @@ const Hotlist = () => {
                         checked={selectedLeads.includes(lead.Id)}
                         onChange={() => toggleLeadSelection(lead.Id)}
                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <Input
+                        type="text"
+                        value={lead.name || ""}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'name', e.target.value)}
+                        className="w-32 text-sm font-medium text-gray-900"
+                        placeholder="Company name"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <Input
+                        type="email"
+                        value={lead.email || ""}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'email', e.target.value)}
+                        className="w-48 text-sm text-gray-900"
+                        placeholder="Email address"
                       />
                     </td>
                     <td className="p-4">

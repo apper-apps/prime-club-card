@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import ApperIcon from "@/components/ApperIcon";
-import Badge from "@/components/atoms/Badge";
-import Button from "@/components/atoms/Button";
-import Card from "@/components/atoms/Card";
-import Input from "@/components/atoms/Input";
-import Empty from "@/components/ui/Empty";
-import Error from "@/components/ui/Error";
-import Loading from "@/components/ui/Loading";
-import SearchBar from "@/components/molecules/SearchBar";
 import { createLead, deleteLead, getLeads, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
+import ApperIcon from "@/components/ApperIcon";
+import SearchBar from "@/components/molecules/SearchBar";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Hotlist from "@/components/pages/Hotlist";
+import Badge from "@/components/atoms/Badge";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
+import Card from "@/components/atoms/Card";
 
 const Leads = () => {
   const [data, setData] = useState([]);
@@ -259,7 +260,9 @@ const handleFieldUpdate = async (leadId, field, value) => {
 const addEmptyRow = () => {
     const newEmptyRow = {
       Id: nextTempId,
-websiteUrl: "",
+      name: "",
+      email: "",
+      websiteUrl: "",
       teamSize: "1-3", 
       arr: 0,
       category: "Accounting Software",
@@ -334,7 +337,9 @@ const handleEmptyRowUpdate = async (tempId, field, value) => {
         
         if (urls.length === 1) {
           // Single URL - existing behavior
-          const leadData = {
+const leadData = {
+            name: emptyRow.name,
+            email: emptyRow.email,
             websiteUrl: urls[0],
             teamSize: emptyRow.teamSize,
             arr: emptyRow.arr,
@@ -358,7 +363,9 @@ const handleEmptyRowUpdate = async (tempId, field, value) => {
           
           for (const url of urls) {
             try {
-              const leadData = {
+const leadData = {
+                name: emptyRow.name,
+                email: emptyRow.email,
                 websiteUrl: url,
                 teamSize: emptyRow.teamSize,
                 arr: emptyRow.arr,
@@ -576,7 +583,9 @@ const getStatusColor = (status) => {
 
 const filteredAndSortedData = data
     .filter(lead => {
-      const matchesSearch = !searchTerm || 
+const matchesSearch = !searchTerm || 
+        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.websiteUrl.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.teamSize.toLowerCase().includes(searchTerm.toLowerCase());
@@ -740,7 +749,7 @@ icon="Building2" /> : <div className="relative">
             >
                 <table className="w-full min-w-[1200px]">
                     <thead className="bg-gray-50">
-                        <tr>
+<tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[50px]">
                                 <input
                                     type="checkbox"
@@ -748,6 +757,22 @@ icon="Building2" /> : <div className="relative">
                                     onChange={toggleSelectAll}
                                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                 />
+                            </th>
+                            <th
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                                <button
+                                    onClick={() => handleSort("name")}
+                                    className="flex items-center gap-1 hover:text-gray-700">Name
+                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                </button>
+                            </th>
+                            <th
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
+                                <button
+                                    onClick={() => handleSort("email")}
+                                    className="flex items-center gap-1 hover:text-gray-700">Email
+                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                </button>
                             </th>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
@@ -806,6 +831,40 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                         disabled
                                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 opacity-50"
                                     />
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap min-w-[150px]">
+                                    <Input
+                                        type="text"
+                                        value={emptyRow.name}
+                                        onChange={e => setEmptyRows(prev => prev.map(row => row.Id === emptyRow.Id ? {
+                                            ...row,
+                                            name: e.target.value
+                                        } : row))}
+                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "name", e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === "Enter") {
+                                                handleEmptyRowUpdate(emptyRow.Id, "name", e.target.value);
+                                            }
+                                        }}
+                                        placeholder="Enter company name..."
+                                        className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 font-medium placeholder-gray-400" />
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap min-w-[200px]">
+                                    <Input
+                                        type="email"
+                                        value={emptyRow.email}
+                                        onChange={e => setEmptyRows(prev => prev.map(row => row.Id === emptyRow.Id ? {
+                                            ...row,
+                                            email: e.target.value
+                                        } : row))}
+                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "email", e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === "Enter") {
+                                                handleEmptyRowUpdate(emptyRow.Id, "email", e.target.value);
+                                            }
+                                        }}
+                                        placeholder="Enter email address..."
+                                        className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[200px]">
                                     <Input
@@ -946,6 +1005,46 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                 />
                             </td>
+                            <td className="px-6 py-4 whitespace-nowrap min-w-[150px]">
+                                <Input
+                                    type="text"
+                                    value={lead.name || ""}
+                                    onChange={e => {
+                                        setData(prevData => prevData.map(l => l.Id === lead.Id ? {
+                                            ...l,
+                                            name: e.target.value
+                                        } : l));
+
+                                        handleFieldUpdateDebounced(lead.Id, "name", e.target.value);
+                                    }}
+                                    onBlur={e => handleFieldUpdate(lead.Id, "name", e.target.value)}
+                                    onKeyDown={e => {
+                                        if (e.key === "Enter") {
+                                            handleFieldUpdate(lead.Id, "name", e.target.value);
+                                        }
+                                    }}
+                                    className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 font-medium" />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap min-w-[200px]">
+                                <Input
+                                    type="email"
+                                    value={lead.email || ""}
+                                    onChange={e => {
+                                        setData(prevData => prevData.map(l => l.Id === lead.Id ? {
+                                            ...l,
+                                            email: e.target.value
+                                        } : l));
+
+                                        handleFieldUpdateDebounced(lead.Id, "email", e.target.value);
+                                    }}
+                                    onBlur={e => handleFieldUpdate(lead.Id, "email", e.target.value)}
+                                    onKeyDown={e => {
+                                        if (e.key === "Enter") {
+                                            handleFieldUpdate(lead.Id, "email", e.target.value);
+                                        }
+                                    }}
+                                    className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900" />
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap min-w-[200px]">
                                 <Input
                                     type="url"
@@ -996,6 +1095,7 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                     onKeyDown={e => {
                                         if (e.key === "Enter") {
                                             handleFieldUpdate(lead.Id, "arr", e.target.value);
+                                        }
 }
                                     }}
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full" />
@@ -1003,6 +1103,7 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                             <td
                                 className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[150px]">
                                 <SearchableSelect
+                                    value={lead.category}
                                     onChange={(value) => handleFieldUpdate(lead.Id, "category", value)}
                                     options={categoryOptions}
                                     placeholder="Select category..."
@@ -1302,6 +1403,8 @@ const SearchableSelect = ({ value, onChange, options, placeholder = "Select...",
 
 const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) => {
   const [formData, setFormData] = useState({
+    name: "",
+    email: "",
     websiteUrl: "",
     teamSize: "1-3",
     arr: "",
@@ -1330,6 +1433,34 @@ return (
           </button>
         </div>
 <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Company Name
+              </label>
+              <Input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                placeholder="Acme Corp"
+                className="w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <Input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                placeholder="partnerships@acme.com"
+                className="w-full"
+                required
+              />
+            </div>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Website URL
@@ -1481,6 +1612,8 @@ return (
 
 const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCategory }) => {
   const [formData, setFormData] = useState({
+    name: lead.name,
+    email: lead.email,
     websiteUrl: lead.websiteUrl,
     teamSize: lead.teamSize,
     arr: lead.arr.toString(),
@@ -1509,6 +1642,32 @@ return (
           </button>
         </div>
 <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                    <Input
+                        type="text"
+                        value={formData.name}
+                        onChange={e => setFormData({
+                            ...formData,
+                            name: e.target.value
+                        })}
+                        className="w-full"
+                        required />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <Input
+                        type="email"
+                        value={formData.email}
+                        onChange={e => setFormData({
+                            ...formData,
+                            email: e.target.value
+                        })}
+                        className="w-full"
+                        required />
+                </div>
+            </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Website URL</label>
                 <Input
