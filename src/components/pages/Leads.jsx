@@ -30,8 +30,6 @@ const [searchTerm, setSearchTerm] = useState("");
   const [nextTempId, setNextTempId] = useState(-1);
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
-  const [tableScrollbarRef, setTableScrollbarRef] = useState(null);
-
   useEffect(() => {
     loadLeads();
   }, []);
@@ -738,7 +736,6 @@ const handleSort = (field) => {
             onAction={() => setShowAddForm(true)}
 icon="Building2" /> : <div className="relative">
             <div 
-              ref={setTableScrollbarRef}
               className="overflow-x-auto"
             >
                 <table className="w-full min-w-[1200px]">
