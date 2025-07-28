@@ -1091,11 +1091,10 @@ onKeyDown={e => {
                                         handleFieldUpdateDebounced(lead.Id, "arr", e.target.value);
                                     }}
                                     onBlur={e => handleFieldUpdate(lead.Id, "arr", e.target.value)}
-                                    onKeyDown={e => {
+onKeyDown={e => {
                                         if (e.key === "Enter") {
                                             handleFieldUpdate(lead.Id, "arr", e.target.value);
                                         }
-}
                                     }}
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full" />
                             </td>
