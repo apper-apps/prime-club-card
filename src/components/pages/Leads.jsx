@@ -224,8 +224,7 @@ const handleFieldUpdate = async (leadId, field, value) => {
     try {
       let processedValue = value;
       if (field === 'arr') {
-        // Convert millions to actual value
-        processedValue = Number(value) * 1000000;
+        processedValue = Number(value);
       }
       const updates = { [field]: processedValue };
       const updatedLead = await updateLead(leadId, updates);
@@ -318,7 +317,7 @@ const parseMultipleUrls = (input) => {
 const handleEmptyRowUpdate = async (tempId, field, value) => {
   setEmptyRows(prev => 
     prev.map(row => 
-      row.Id === tempId ? { ...row, [field]: field === 'arr' ? Number(value) * 1000000 : value } : row
+      row.Id === tempId ? { ...row, [field]: field === 'arr' ? Number(value) : value } : row
     )
   );
 
@@ -413,7 +412,7 @@ const leadData = {
     if (field !== 'websiteUrl') {
       setEmptyRows(prev => 
         prev.map(row => 
-          row.Id === tempId ? { ...row, [field]: field === 'arr' ? Number(value) * 1000000 : value } : row
+          row.Id === tempId ? { ...row, [field]: field === 'arr' ? Number(value) : value } : row
         )
       );
     }
@@ -792,9 +791,9 @@ icon="Building2" /> : <div className="relative">
                             </th>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                                <button
+<button
                                     onClick={() => handleSort("arr")}
-                                    className="flex items-center gap-1 hover:text-gray-700">ARR (M)
+                                    className="flex items-center gap-1 hover:text-gray-700">ARR
                                                             <ApperIcon name="ArrowUpDown" size={12} />
                                 </button>
                             </th>
@@ -895,12 +894,12 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                     </select>
                                 </td>
                                 <td
-                                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[120px]">
+className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[120px]">
                                     <Input
                                         type="number"
-                                        step="0.1"
+                                        step="1"
                                         min="0"
-                                        value={(emptyRow.arr / 1000000).toFixed(1)}
+                                        value={emptyRow.arr}
                                         onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "arr", e.target.value)}
                                         onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "arr", e.target.value)}
 onKeyDown={e => {
@@ -908,7 +907,7 @@ onKeyDown={e => {
                                                 handleEmptyRowUpdate(emptyRow.Id, "arr", e.target.value);
                                             }
                                         }}
-                                        placeholder="0.0"
+                                        placeholder="0"
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full placeholder-gray-400" />
                                 </td>
                                 <td
@@ -1078,15 +1077,15 @@ onKeyDown={e => {
                             </td>
                             <td
                                 className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[120px]">
-                                <Input
+<Input
                                     type="number"
-                                    step="0.1"
+                                    step="1"
                                     min="0"
-                                    value={(lead.arr / 1000000).toFixed(1)}
+                                    value={lead.arr}
                                     onChange={e => {
                                         setData(prevData => prevData.map(l => l.Id === lead.Id ? {
                                             ...l,
-                                            arr: Number(e.target.value) * 1000000
+                                            arr: Number(e.target.value)
                                         } : l));
 
                                         handleFieldUpdateDebounced(lead.Id, "arr", e.target.value);
