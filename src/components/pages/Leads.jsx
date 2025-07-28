@@ -269,6 +269,7 @@ const addEmptyRow = () => {
       status: "Keep an Eye",
       fundingType: "Bootstrapped",
       followUpDate: "",
+      productName: "",
       isEmptyRow: true
     };
     setEmptyRows(prev => [...prev, newEmptyRow]);
@@ -345,7 +346,8 @@ const leadData = {
             category: emptyRow.category,
             linkedinUrl: emptyRow.linkedinUrl || `https://linkedin.com/company/${urls[0].replace(/^https?:\/\//, '').replace(/\/$/, '')}`,
             status: emptyRow.status,
-            fundingType: emptyRow.fundingType
+            fundingType: emptyRow.fundingType,
+            productName: emptyRow.productName
           };
           
           const newLead = await createLead(leadData);
@@ -371,7 +373,8 @@ const leadData = {
                 category: emptyRow.category,
                 linkedinUrl: emptyRow.linkedinUrl || `https://linkedin.com/company/${url.replace(/^https?:\/\//, '').replace(/\/$/, '')}`,
                 status: emptyRow.status,
-                fundingType: emptyRow.fundingType
+                fundingType: emptyRow.fundingType,
+                productName: emptyRow.productName
               };
               
               const newLead = await createLead(leadData);
@@ -587,8 +590,8 @@ const matchesSearch = !searchTerm ||
         lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.websiteUrl.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.teamSize.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        lead.teamSize.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
       const matchesFunding = fundingFilter === "all" || lead.fundingType === fundingFilter;
       const matchesCategory = categoryFilter === "all" || lead.category === categoryFilter;
@@ -812,9 +815,14 @@ icon="Building2" /> : <div className="relative">
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[130px]">Follow-up Date
                                                     </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Added By
-                                                    </th>
+<th
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                <button
+                                    onClick={() => handleSort("productName")}
+                                    className="flex items-center gap-1 hover:text-gray-700">Product Name
+                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                </button>
+                            </th>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[120px] sticky right-0 bg-gray-50 border-l border-gray-200">Actions
                                                     </th>
@@ -977,9 +985,22 @@ onKeyDown={e => {
                                         }}
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full placeholder-gray-400 text-sm" />
                                 </td>
-                                <td
-                                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 min-w-[120px]">
-                                    <span className="italic">Current User</span>
+<td className="px-6 py-4 whitespace-nowrap min-w-[120px]">
+                                    <Input
+                                        type="text"
+                                        value={emptyRow.productName}
+                                        onChange={e => setEmptyRows(prev => prev.map(row => row.Id === emptyRow.Id ? {
+                                            ...row,
+                                            productName: e.target.value
+                                        } : row))}
+                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "productName", e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === "Enter") {
+                                                handleEmptyRowUpdate(emptyRow.Id, "productName", e.target.value);
+                                            }
+                                        }}
+                                        placeholder="Enter product name..."
+                                        className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                                 </td>
                                 <td
                                     className="px-6 py-4 whitespace-nowrap text-sm font-medium w-[120px] sticky right-0 bg-white border-l border-gray-200">
@@ -1196,12 +1217,26 @@ onKeyDown={e => {
                                     }}
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full text-sm" />
                             </td>
-                            <td
-                                className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[120px]">
-                                <div className="flex items-center">
-                                    <ApperIcon name="User" size={14} className="mr-2 text-gray-400" />
-                                    <span>{lead.addedByName || "Unknown"}</span>
-                                </div>
+<td className="px-6 py-4 whitespace-nowrap min-w-[120px]">
+                                <Input
+                                    type="text"
+                                    value={lead.productName || ""}
+                                    onChange={e => {
+                                        setData(prevData => prevData.map(l => l.Id === lead.Id ? {
+                                            ...l,
+                                            productName: e.target.value
+                                        } : l));
+
+                                        handleFieldUpdateDebounced(lead.Id, "productName", e.target.value);
+                                    }}
+                                    onBlur={e => handleFieldUpdate(lead.Id, "productName", e.target.value)}
+                                    onKeyDown={e => {
+                                        if (e.key === "Enter") {
+                                            handleFieldUpdate(lead.Id, "productName", e.target.value);
+                                        }
+                                    }}
+                                    placeholder="Enter product name..."
+                                    className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                             </td>
                             <td
                                 className="px-6 py-4 whitespace-nowrap text-sm font-medium w-[120px] sticky right-0 bg-white border-l border-gray-200">
@@ -1400,7 +1435,7 @@ const SearchableSelect = ({ value, onChange, options, placeholder = "Select...",
 };
 
 const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     name: "",
     email: "",
     websiteUrl: "",
@@ -1410,7 +1445,8 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) 
     linkedinUrl: "",
     status: "Keep an Eye",
     fundingType: "Bootstrapped",
-    edition: "Select Edition"
+    edition: "Select Edition",
+    productName: ""
   });
 
   const handleSubmit = (e) => {
@@ -1594,6 +1630,18 @@ return (
               <option value="Limited Edition">Limited Edition</option>
             </select>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Product Name
+            </label>
+            <Input
+              type="text"
+              value={formData.productName}
+              onChange={(e) => setFormData({...formData, productName: e.target.value})}
+              placeholder="Enter product name"
+              className="w-full"
+            />
+          </div>
 <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel
@@ -1610,7 +1658,7 @@ return (
 
 const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCategory }) => {
   const [formData, setFormData] = useState({
-    name: lead.name,
+name: lead.name,
     email: lead.email,
     websiteUrl: lead.websiteUrl,
     teamSize: lead.teamSize,
@@ -1619,7 +1667,8 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
     linkedinUrl: lead.linkedinUrl,
     status: lead.status,
     fundingType: lead.fundingType,
-    edition: lead.edition || "Select Edition"
+    edition: lead.edition || "Select Edition",
+    productName: lead.productName || ""
   });
 
   const handleSubmit = (e) => {
@@ -1798,6 +1847,19 @@ return (
                     <option value="Collector's Edition">Collector's Edition</option>
                     <option value="Limited Edition">Limited Edition</option>
                 </select>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+                <Input
+                    type="text"
+                    value={formData.productName}
+                    onChange={e => setFormData({
+                        ...formData,
+                        productName: e.target.value
+                    })}
+                    placeholder="Enter product name"
+                    className="w-full"
+                />
             </div>
 <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
                 <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">

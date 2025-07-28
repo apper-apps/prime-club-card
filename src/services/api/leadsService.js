@@ -52,17 +52,8 @@ export const getLeads = async () => {
     leads = deduplicationResult.uniqueLeads;
   }
   
-  // Enhance leads with sales rep names
-  const leadsWithRepNames = leads.map(lead => {
-    const salesRep = salesReps.find(rep => rep.Id === lead.addedBy);
-    return {
-      ...lead,
-      addedByName: salesRep ? salesRep.name : 'Unknown'
-    };
-  });
-  
-  return {
-    leads: leadsWithRepNames,
+return {
+    leads: leads,
     deduplicationResult: deduplicationResult.duplicateCount > 0 ? deduplicationResult : null
   };
 };
@@ -112,19 +103,14 @@ const newLead = {
     fundingType: leadData.fundingType || "Bootstrapped",
     edition: leadData.edition || "Select Edition",
     followUpDate: leadData.followUpDate || null,
-    addedBy: leadData.addedBy || 1, // Default to first sales rep for demo
+    productName: leadData.productName || "",
     Id: maxId + 1,
     createdAt: new Date().toISOString()
   };
   
   leads.push(newLead);
   
-  // Return lead with sales rep name
-  const salesRep = salesReps.find(rep => rep.Id === newLead.addedBy);
-  return { 
-    ...newLead,
-    addedByName: salesRep ? salesRep.name : 'Unknown'
-  };
+  return newLead;
 };
 
 export const updateLead = async (id, updates) => {
@@ -167,28 +153,15 @@ export const getDailyLeadsReport = async () => {
   });
   
   // Group by sales rep
-  const reportData = {};
-  
-  // Initialize all sales reps with empty data
-  salesReps.forEach(rep => {
-    reportData[rep.name] = {
-      salesRep: rep.name,
-      salesRepId: rep.Id,
-      leads: [],
-      leadCount: 0,
-      lowPerformance: false
-    };
-  });
-  
-  // Add today's leads to the respective sales reps
-  todaysLeads.forEach(lead => {
-    const salesRep = salesReps.find(rep => rep.Id === lead.addedBy);
-    const repName = salesRep ? salesRep.name : 'Unknown';
-    
-    if (reportData[repName]) {
-      reportData[repName].leads.push(lead);
+const reportData = {
+    'Daily Leads': {
+      salesRep: 'Daily Leads',
+      salesRepId: 0,
+      leads: todaysLeads,
+      leadCount: todaysLeads.length,
+      lowPerformance: todaysLeads.length < 5
     }
-  });
+  };
   
   // Calculate lead counts and identify low performers
   Object.values(reportData).forEach(repData => {
