@@ -517,31 +517,19 @@ let filtered = leads.filter(lead => {
                       />
                     </td>
 <td className="p-4">
-                      <Input
-                        type="text"
-                        value={lead.productName || ""}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'productName', e.target.value)}
-                        className="w-32 text-sm text-gray-900"
-                        placeholder="Product name"
-                      />
+                      <span className="text-sm text-gray-900">
+                        {lead.productName || "—"}
+                      </span>
                     </td>
-                    <td className="p-4">
-                      <Input
-                        type="text"
-                        value={lead.name || ""}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'name', e.target.value)}
-                        className="w-32 text-sm font-medium text-gray-900"
-                        placeholder="Company name"
-                      />
+<td className="p-4">
+                      <span className="text-sm font-medium text-gray-900">
+                        {lead.name || "—"}
+                      </span>
                     </td>
-                    <td className="p-4">
-                      <Input
-                        type="email"
-                        value={lead.email || ""}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'email', e.target.value)}
-                        className="w-48 text-sm text-gray-900"
-                        placeholder="Email address"
-                      />
+<td className="p-4">
+                      <span className="text-sm text-gray-900">
+                        {lead.email || "—"}
+                      </span>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
@@ -574,14 +562,10 @@ let filtered = leads.filter(lead => {
                         ))}
                       </select>
                     </td>
-                    <td className="p-4">
-                      <Input
-                        type="number"
-                        value={lead.arr}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'arr', e.target.value)}
-                        className="w-24 text-sm"
-                        min="0"
-                      />
+<td className="p-4">
+                      <span className="text-sm text-gray-900">
+                        {lead.arr || "—"}
+                      </span>
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-gray-700">{lead.category}</span>
@@ -611,15 +595,11 @@ let filtered = leads.filter(lead => {
                     <td className="p-4">
                       <span className="text-sm text-gray-700">{lead.addedByName}</span>
                     </td>
-                    <td className="p-4">
+<td className="p-4">
                       <div className="flex items-center gap-2">
-                        <Input
-                          type="url"
-                          value={lead.linkedinUrl || ""}
-                          onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'linkedinUrl', e.target.value)}
-                          className="w-32 text-sm"
-                          placeholder="LinkedIn URL"
-                        />
+                        <span className="text-sm text-gray-900">
+                          {lead.linkedinUrl || "—"}
+                        </span>
                         {lead.linkedinUrl && (
                           <a
                             href={lead.linkedinUrl}
@@ -632,13 +612,10 @@ let filtered = leads.filter(lead => {
                         )}
                       </div>
                     </td>
-                    <td className="p-4">
-                      <Input
-                        type="date"
-                        value={lead.followUpDate ? lead.followUpDate.split('T')[0] : ''}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'followUpDate', e.target.value ? new Date(e.target.value).toISOString() : '')}
-                        className="w-36 text-sm"
-                      />
+<td className="p-4">
+                      <span className="text-sm text-gray-900">
+                        {lead.followUpDate ? new Date(lead.followUpDate).toLocaleDateString() : "—"}
+                      </span>
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-gray-700">
