@@ -246,12 +246,13 @@ const Hotlist = () => {
   const fundingTypeOptions = ['Bootstrapped', 'Pre-seed', 'Y Combinator', 'Seed', 'Series A', 'Series B', 'Series C'];
 
 const filteredAndSortedData = React.useMemo(() => {
-    let filtered = leads.filter(lead => {
+let filtered = leads.filter(lead => {
       const matchesSearch = !searchQuery || 
         lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.websiteUrl.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (lead.productName && lead.productName.toLowerCase().includes(searchQuery.toLowerCase())) ||
         lead.addedByName.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = !statusFilter || lead.status === statusFilter;
       const matchesFunding = !fundingFilter || lead.fundingType === fundingFilter;
@@ -474,6 +475,52 @@ const filteredAndSortedData = React.useMemo(() => {
                     </button>
                   </th>
                   <th className="text-left p-4">
+<button
+                      onClick={() => handleSort('productName')}
+                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      Product Name
+                      <ApperIcon name="ArrowUpDown" size={14} />
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('teamSize')}
+                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      Team Size
+                      <ApperIcon name="ArrowUpDown" size={14} />
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('arr')}
+                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      ARR
+                      <ApperIcon name="ArrowUpDown" size={14} />
+                    </button>
+                  </th>
+                  <th className="text-left p-4">LinkedIn</th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('fundingType')}
+                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      Funding Type
+                      <ApperIcon name="ArrowUpDown" size={14} />
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('followUpDate')}
+                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      Follow-up Date
+                      <ApperIcon name="ArrowUpDown" size={14} />
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
                     <button
                       onClick={() => handleSort('createdAt')}
                       className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
@@ -494,6 +541,15 @@ const filteredAndSortedData = React.useMemo(() => {
                         checked={selectedLeads.includes(lead.Id)}
                         onChange={() => toggleLeadSelection(lead.Id)}
                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                    </td>
+<td className="p-4">
+                      <Input
+                        type="text"
+                        value={lead.productName || ""}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'productName', e.target.value)}
+                        className="w-32 text-sm text-gray-900"
+                        placeholder="Product name"
                       />
                     </td>
                     <td className="p-4">
@@ -581,6 +637,73 @@ const filteredAndSortedData = React.useMemo(() => {
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-gray-700">{lead.addedByName}</span>
+                    </td>
+<td className="p-4">
+                      <select
+                        value={lead.teamSize || "1-3"}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'teamSize', e.target.value)}
+                        className="w-24 text-sm border border-gray-300 rounded px-2 py-1"
+                      >
+                        <option value="1-3">1-3</option>
+                        <option value="4-10">4-10</option>
+                        <option value="11-50">11-50</option>
+                        <option value="51-100">51-100</option>
+                        <option value="101-500">101-500</option>
+                        <option value="500+">500+</option>
+                      </select>
+                    </td>
+                    <td className="p-4">
+                      <Input
+                        type="number"
+                        value={lead.arr || 0}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'arr', Number(e.target.value))}
+                        className="w-24 text-sm"
+                        placeholder="0"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="url"
+                          value={lead.linkedinUrl || ""}
+                          onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'linkedinUrl', e.target.value)}
+                          className="w-32 text-sm"
+                          placeholder="LinkedIn URL"
+                        />
+                        {lead.linkedinUrl && (
+                          <a
+                            href={lead.linkedinUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary-600 hover:text-primary-800 flex-shrink-0"
+                          >
+                            <ApperIcon name="Linkedin" size={16} />
+                          </a>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <select
+                        value={lead.fundingType || "Bootstrapped"}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'fundingType', e.target.value)}
+                        className="w-32 text-sm border border-gray-300 rounded px-2 py-1"
+                      >
+                        <option value="Bootstrapped">Bootstrapped</option>
+                        <option value="Pre-seed">Pre-seed</option>
+                        <option value="Y Combinator">Y Combinator</option>
+                        <option value="Angel">Angel</option>
+                        <option value="Series A">Series A</option>
+                        <option value="Series B">Series B</option>
+                        <option value="Series C">Series C</option>
+                      </select>
+                    </td>
+                    <td className="p-4">
+                      <Input
+                        type="date"
+                        value={lead.followUpDate ? lead.followUpDate.split('T')[0] : ''}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'followUpDate', e.target.value ? new Date(e.target.value).toISOString() : '')}
+                        className="w-36 text-sm"
+                      />
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-gray-700">
