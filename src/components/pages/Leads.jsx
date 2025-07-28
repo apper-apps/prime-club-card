@@ -903,11 +903,11 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                         value={(emptyRow.arr / 1000000).toFixed(1)}
                                         onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "arr", e.target.value)}
                                         onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "arr", e.target.value)}
-                                        onKeyDown={e => {
+onKeyDown={e => {
                                             if (e.key === "Enter") {
                                                 handleEmptyRowUpdate(emptyRow.Id, "arr", e.target.value);
                                             }
-}}
+                                        }}
                                         placeholder="0.0"
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full placeholder-gray-400" />
                                 </td>
