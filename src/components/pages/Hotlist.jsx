@@ -611,29 +611,6 @@ let filtered = leads.filter(lead => {
                     <td className="p-4">
                       <span className="text-sm text-gray-700">{lead.addedByName}</span>
                     </td>
-<td className="p-4">
-                      <select
-                        value={lead.teamSize || "1-3"}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'teamSize', e.target.value)}
-                        className="w-24 text-sm border border-gray-300 rounded px-2 py-1"
-                      >
-                        <option value="1-3">1-3</option>
-                        <option value="4-10">4-10</option>
-                        <option value="11-50">11-50</option>
-                        <option value="51-100">51-100</option>
-                        <option value="101-500">101-500</option>
-                        <option value="500+">500+</option>
-                      </select>
-                    </td>
-                    <td className="p-4">
-                      <Input
-                        type="number"
-                        value={lead.arr || 0}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'arr', Number(e.target.value))}
-                        className="w-24 text-sm"
-                        placeholder="0"
-                      />
-                    </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <Input
@@ -654,21 +631,6 @@ let filtered = leads.filter(lead => {
                           </a>
                         )}
                       </div>
-                    </td>
-                    <td className="p-4">
-                      <select
-                        value={lead.fundingType || "Bootstrapped"}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'fundingType', e.target.value)}
-                        className="w-32 text-sm border border-gray-300 rounded px-2 py-1"
-                      >
-                        <option value="Bootstrapped">Bootstrapped</option>
-                        <option value="Pre-seed">Pre-seed</option>
-                        <option value="Y Combinator">Y Combinator</option>
-                        <option value="Angel">Angel</option>
-                        <option value="Series A">Series A</option>
-                        <option value="Series B">Series B</option>
-                        <option value="Series C">Series C</option>
-                      </select>
                     </td>
                     <td className="p-4">
                       <Input
