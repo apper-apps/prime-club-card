@@ -10,7 +10,9 @@
     "linkedinUrl": "https://linkedin.com/company/notion",
     "status": "Keep an Eye",
     "fundingType": "Series A",
+"followUpDate": "2024-12-25T10:30:00Z",
     "edition": "Black Edition",
+    "productName": "Notion AI",
     "addedBy": 1,
     "addedByName": "Sarah Johnson",
     "createdAt": "2024-12-19T10:30:00Z"
@@ -26,7 +28,9 @@
     "linkedinUrl": "https://linkedin.com/company/canva",
     "status": "Launched on AppSumo",
     "fundingType": "Series C",
+"followUpDate": "2024-12-30T14:20:00Z",
     "edition": "Collector's Edition",
+    "productName": "Canva Pro",
     "addedBy": 2,
     "addedByName": "Mike Davis",
     "createdAt": "2024-12-19T14:20:00Z"
@@ -42,7 +46,9 @@
     "linkedinUrl": "https://linkedin.com/company/figma",
     "status": "Hotlist",
     "fundingType": "Series B",
+"followUpDate": "2024-01-25T09:15:00Z",
     "edition": "Limited Edition",
+    "productName": "Figma Design",
     "addedBy": 3,
     "addedByName": "Tom Wilson",
     "createdAt": "2024-01-18T09:15:00Z"
@@ -58,7 +64,9 @@
     "linkedinUrl": "https://linkedin.com/company/stripe",
     "status": "Out of League",
     "fundingType": "Series C",
+"followUpDate": "",
     "edition": "Black Edition",
+    "productName": "Stripe Connect",
     "addedBy": 4,
     "addedByName": "Emily Chen",
     "createdAt": "2024-01-20T11:45:00Z"
@@ -74,7 +82,9 @@
     "linkedinUrl": "https://linkedin.com/company/shopify",
     "status": "Launched on Prime Club",
     "fundingType": "Series C",
+"followUpDate": "2024-01-20T16:30:00Z",
     "edition": "Collector's Edition",
+    "productName": "Shopify Plus",
     "addedBy": 5,
     "addedByName": "Alex Rodriguez",
     "createdAt": "2024-01-12T16:30:00Z"

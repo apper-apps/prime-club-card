@@ -760,6 +760,14 @@ icon="Building2" /> : <div className="relative">
                                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                 />
                             </th>
+<th
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                <button
+                                    onClick={() => handleSort("productName")}
+                                    className="flex items-center gap-1 hover:text-gray-700">Product Name
+                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                </button>
+                            </th>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                 <button
@@ -794,7 +802,7 @@ icon="Building2" /> : <div className="relative">
                             </th>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-<button
+                                <button
                                     onClick={() => handleSort("arr")}
                                     className="flex items-center gap-1 hover:text-gray-700">ARR
                                                             <ApperIcon name="ArrowUpDown" size={12} />
@@ -815,14 +823,6 @@ icon="Building2" /> : <div className="relative">
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[130px]">Follow-up Date
                                                     </th>
-<th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                                <button
-                                    onClick={() => handleSort("productName")}
-                                    className="flex items-center gap-1 hover:text-gray-700">Product Name
-                                                            <ApperIcon name="ArrowUpDown" size={12} />
-                                </button>
-                            </th>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[120px] sticky right-0 bg-gray-50 border-l border-gray-200">Actions
                                                     </th>
@@ -838,6 +838,23 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                         disabled
                                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 opacity-50"
                                     />
+                                </td>
+<td className="px-6 py-4 whitespace-nowrap min-w-[120px]">
+                                    <Input
+                                        type="text"
+                                        value={emptyRow.productName}
+                                        onChange={e => setEmptyRows(prev => prev.map(row => row.Id === emptyRow.Id ? {
+                                            ...row,
+                                            productName: e.target.value
+                                        } : row))}
+                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "productName", e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === "Enter") {
+                                                handleEmptyRowUpdate(emptyRow.Id, "productName", e.target.value);
+                                            }
+                                        }}
+                                        placeholder="Enter product name..."
+                                        className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[150px]">
                                     <Input
@@ -902,7 +919,7 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                     </select>
                                 </td>
                                 <td
-className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[120px]">
+                                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[120px]">
                                     <Input
                                         type="number"
                                         step="1"
@@ -910,7 +927,7 @@ className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[120px]">
                                         value={emptyRow.arr}
                                         onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "arr", e.target.value)}
                                         onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "arr", e.target.value)}
-onKeyDown={e => {
+                                        onKeyDown={e => {
                                             if (e.key === "Enter") {
                                                 handleEmptyRowUpdate(emptyRow.Id, "arr", e.target.value);
                                             }
@@ -970,7 +987,7 @@ onKeyDown={e => {
                                             className="absolute inset-0 opacity-0 cursor-pointer w-full">
                                             {fundingTypeOptions.map(option => <option key={option} value={option}>{option}</option>)}
                                         </select>
-</div>
+                                    </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[130px]">
                                     <Input
@@ -984,23 +1001,6 @@ onKeyDown={e => {
                                             }
                                         }}
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full placeholder-gray-400 text-sm" />
-                                </td>
-<td className="px-6 py-4 whitespace-nowrap min-w-[120px]">
-                                    <Input
-                                        type="text"
-                                        value={emptyRow.productName}
-                                        onChange={e => setEmptyRows(prev => prev.map(row => row.Id === emptyRow.Id ? {
-                                            ...row,
-                                            productName: e.target.value
-                                        } : row))}
-                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "productName", e.target.value)}
-                                        onKeyDown={e => {
-                                            if (e.key === "Enter") {
-                                                handleEmptyRowUpdate(emptyRow.Id, "productName", e.target.value);
-                                            }
-                                        }}
-                                        placeholder="Enter product name..."
-                                        className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                                 </td>
                                 <td
                                     className="px-6 py-4 whitespace-nowrap text-sm font-medium w-[120px] sticky right-0 bg-white border-l border-gray-200">
@@ -1024,6 +1024,27 @@ onKeyDown={e => {
                                     onChange={() => toggleLeadSelection(lead.Id)}
                                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                 />
+                            </td>
+<td className="px-6 py-4 whitespace-nowrap min-w-[120px]">
+                                <Input
+                                    type="text"
+                                    value={lead.productName || ""}
+                                    onChange={e => {
+                                        setData(prevData => prevData.map(l => l.Id === lead.Id ? {
+                                            ...l,
+                                            productName: e.target.value
+                                        } : l));
+
+                                        handleFieldUpdateDebounced(lead.Id, "productName", e.target.value);
+                                    }}
+                                    onBlur={e => handleFieldUpdate(lead.Id, "productName", e.target.value)}
+                                    onKeyDown={e => {
+                                        if (e.key === "Enter") {
+                                            handleFieldUpdate(lead.Id, "productName", e.target.value);
+                                        }
+                                    }}
+                                    placeholder="Enter product name..."
+                                    className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap min-w-[150px]">
                                 <Input
@@ -1098,7 +1119,7 @@ onKeyDown={e => {
                             </td>
                             <td
                                 className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[120px]">
-<Input
+                                <Input
                                     type="number"
                                     step="1"
                                     min="0"
@@ -1112,7 +1133,7 @@ onKeyDown={e => {
                                         handleFieldUpdateDebounced(lead.Id, "arr", e.target.value);
                                     }}
                                     onBlur={e => handleFieldUpdate(lead.Id, "arr", e.target.value)}
-onKeyDown={e => {
+                                    onKeyDown={e => {
                                         if (e.key === "Enter") {
                                             handleFieldUpdate(lead.Id, "arr", e.target.value);
                                         }
@@ -1129,7 +1150,7 @@ onKeyDown={e => {
                                     onCreateCategory={handleCreateCategory}
                                 />
                             </td>
-<td className="px-6 py-4 whitespace-nowrap min-w-[100px]">
+                            <td className="px-6 py-4 whitespace-nowrap min-w-[100px]">
                                 <div className="flex items-center gap-2">
                                     <Input
                                         type="url"
@@ -1190,7 +1211,7 @@ onKeyDown={e => {
                                         className="absolute inset-0 opacity-0 cursor-pointer w-full">
                                         {fundingTypeOptions.map(option => <option key={option} value={option}>{option}</option>)}
                                     </select>
-</div>
+                                </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap min-w-[130px]">
                                 <Input
@@ -1216,27 +1237,6 @@ onKeyDown={e => {
                                         }
                                     }}
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full text-sm" />
-                            </td>
-<td className="px-6 py-4 whitespace-nowrap min-w-[120px]">
-                                <Input
-                                    type="text"
-                                    value={lead.productName || ""}
-                                    onChange={e => {
-                                        setData(prevData => prevData.map(l => l.Id === lead.Id ? {
-                                            ...l,
-                                            productName: e.target.value
-                                        } : l));
-
-                                        handleFieldUpdateDebounced(lead.Id, "productName", e.target.value);
-                                    }}
-                                    onBlur={e => handleFieldUpdate(lead.Id, "productName", e.target.value)}
-                                    onKeyDown={e => {
-                                        if (e.key === "Enter") {
-                                            handleFieldUpdate(lead.Id, "productName", e.target.value);
-                                        }
-                                    }}
-                                    placeholder="Enter product name..."
-                                    className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                             </td>
                             <td
                                 className="px-6 py-4 whitespace-nowrap text-sm font-medium w-[120px] sticky right-0 bg-white border-l border-gray-200">
@@ -1445,6 +1445,7 @@ const [formData, setFormData] = useState({
     linkedinUrl: "",
     status: "Keep an Eye",
     fundingType: "Bootstrapped",
+    followUpDate: "",
     edition: "Select Edition",
     productName: ""
   });
@@ -1616,6 +1617,17 @@ return (
             </div>
           </div>
 <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Follow-up Date
+            </label>
+            <Input
+              type="date"
+              value={formData.followUpDate ? formData.followUpDate.split('T')[0] : ''}
+              onChange={(e) => setFormData({...formData, followUpDate: e.target.value ? new Date(e.target.value).toISOString() : ''})}
+              className="w-full"
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Edition
             </label>
