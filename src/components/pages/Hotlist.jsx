@@ -306,13 +306,13 @@ let filtered = leads.filter(lead => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-<div>
           <h1 className="text-2xl font-bold text-gray-900">Hotlist</h1>
           <p className="text-sm text-gray-600">
             {totalItems} high-priority leads ({paginatedData.length} showing)
           </p>
+        </div>
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
