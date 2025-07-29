@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import ApperIcon from "@/components/ApperIcon";
-import Badge from "@/components/atoms/Badge";
-import Button from "@/components/atoms/Button";
-import Card from "@/components/atoms/Card";
-import Input from "@/components/atoms/Input";
-import Empty from "@/components/ui/Empty";
-import Error from "@/components/ui/Error";
-import Loading from "@/components/ui/Loading";
-import SearchBar from "@/components/molecules/SearchBar";
 import { deleteLead, getLeads, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
+import ApperIcon from "@/components/ApperIcon";
+import SearchBar from "@/components/molecules/SearchBar";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Badge from "@/components/atoms/Badge";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
+import Card from "@/components/atoms/Card";
 
 const Hotlist = () => {
   const [leads, setLeads] = useState([]);
@@ -252,8 +252,7 @@ let filtered = leads.filter(lead => {
         lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.websiteUrl.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (lead.productName && lead.productName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        lead.addedByName.toLowerCase().includes(searchQuery.toLowerCase());
+        (lead.productName && lead.productName.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesStatus = !statusFilter || lead.status === statusFilter;
       const matchesFunding = !fundingFilter || lead.fundingType === fundingFilter;
       
@@ -473,16 +472,7 @@ let filtered = leads.filter(lead => {
                       Funding
                       <ApperIcon name="ArrowUpDown" size={14} />
                     </button>
-                  </th>
-                  <th className="text-left p-4">
-                    <button
-                      onClick={() => handleSort('addedByName')}
-                      className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
-                    >
-                      Added By
-                      <ApperIcon name="ArrowUpDown" size={14} />
-                    </button>
-                  </th>
+</th>
                   <th className="text-left p-4">LinkedIn</th>
                   <th className="text-left p-4">
                     <button
@@ -591,9 +581,6 @@ let filtered = leads.filter(lead => {
                           <option key={type} value={type}>{type}</option>
                         ))}
                       </select>
-                    </td>
-                    <td className="p-4">
-                      <span className="text-sm text-gray-700">{lead.addedByName}</span>
                     </td>
 <td className="p-4">
                       <div className="flex items-center gap-2">

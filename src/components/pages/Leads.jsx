@@ -27,10 +27,13 @@ const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
-  const [emptyRows, setEmptyRows] = useState([]);
+const [emptyRows, setEmptyRows] = useState([]);
   const [nextTempId, setNextTempId] = useState(-1);
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+
   useEffect(() => {
     loadLeads();
   }, []);
@@ -624,8 +627,28 @@ const matchesSearch = !searchTerm ||
       } else {
         return aValue < bValue ? 1 : -1;
       }
-    });
+});
 
+  // Pagination logic
+  const totalItems = filteredAndSortedData.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedData = filteredAndSortedData.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+React.useEffect(() => {
+setCurrentPage(1);
+}, [searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1);
+  };
 const handleSort = (field) => {
     if (sortBy === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -1016,7 +1039,7 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                             </tr>
                         )}
                         {/* Existing leads data */}
-{filteredAndSortedData.map(lead => <tr key={lead.Id} className="hover:bg-gray-50">
+{paginatedData.map(lead => <tr key={lead.Id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap w-[50px]">
                                 <input
                                     type="checkbox"
@@ -1259,7 +1282,84 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
             </div>
 </div>}
 </Card>
-    
+
+        {/* Pagination Controls */}
+        {totalItems > 0 && (
+          <Card className="p-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              {/* Results Info */}
+              <div className="text-sm text-gray-600">
+                Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} leads
+              </div>
+
+              <div className="flex items-center gap-4">
+                {/* Page Size Selector */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Show:</span>
+                  <select
+                    value={pageSize}
+                    onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                </div>
+
+                {/* Pagination Buttons */}
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1"
+                  >
+                    <ApperIcon name="ChevronLeft" size={16} />
+                  </Button>
+
+                  {/* Page Numbers */}
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNumber;
+                    if (totalPages <= 5) {
+                      pageNumber = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNumber = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNumber = totalPages - 4 + i;
+                    } else {
+                      pageNumber = currentPage - 2 + i;
+                    }
+
+                    return (
+                      <Button
+                        key={pageNumber}
+                        variant={currentPage === pageNumber ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(pageNumber)}
+                        className="px-3 py-1"
+                      >
+                        {pageNumber}
+                      </Button>
+                    );
+                  })}
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1"
+                  >
+                    <ApperIcon name="ChevronRight" size={16} />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
     {/* Bulk Actions */}
     {selectedLeads.length > 0 && (
       <Card className="p-4 bg-primary-50 border-primary-200">
