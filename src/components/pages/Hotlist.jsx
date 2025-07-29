@@ -79,10 +79,10 @@ const Hotlist = () => {
         'Closed Lost': 'Lost'
       };
       
-      const targetStage = statusToStageMap[newStatus];
+const targetStage = statusToStageMap[newStatus];
       if (targetStage) {
         const currentDeals = await getDeals();
-        const existingDeal = currentDeals.find(deal => deal.leadId === leadId);
+        const existingDeal = currentDeals.find(deal => deal.leadId === leadId.toString());
         
         if (existingDeal) {
           await updateDeal(existingDeal.Id, { stage: targetStage });
@@ -91,7 +91,7 @@ const Hotlist = () => {
           const dealData = {
             name: `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
             leadName: updatedLead.websiteUrl.replace('https://', '').replace('www.', ''),
-            leadId: updatedLead.Id,
+            leadId: leadId.toString(),
             value: updatedLead.arr || 0,
             stage: targetStage,
             assignedRep: 'Unassigned',
@@ -464,7 +464,7 @@ let filtered = leads.filter(lead => {
                       <ApperIcon name="ArrowUpDown" size={14} />
                     </button>
                   </th>
-                  <th className="text-left p-4">
+<th className="text-left p-4">
                     <button
                       onClick={() => handleSort('fundingType')}
                       className="flex items-center gap-2 font-medium text-gray-700 hover:text-gray-900"
@@ -472,7 +472,7 @@ let filtered = leads.filter(lead => {
                       Funding
                       <ApperIcon name="ArrowUpDown" size={14} />
                     </button>
-</th>
+                  </th>
                   <th className="text-left p-4">LinkedIn</th>
                   <th className="text-left p-4">
                     <button
@@ -580,9 +580,9 @@ let filtered = leads.filter(lead => {
                         {fundingTypeOptions.map(type => (
                           <option key={type} value={type}>{type}</option>
                         ))}
-                      </select>
+</select>
                     </td>
-<td className="p-4">
+                    <td className="p-4">
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-900">
                           {lead.linkedinUrl || "—"}
@@ -597,9 +597,9 @@ let filtered = leads.filter(lead => {
                             <ApperIcon name="Linkedin" size={16} />
                           </a>
                         )}
-                      </div>
+</div>
                     </td>
-<td className="p-4">
+                    <td className="p-4">
                       <span className="text-sm text-gray-900">
                         {lead.followUpDate ? new Date(lead.followUpDate).toLocaleDateString() : "—"}
                       </span>

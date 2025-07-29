@@ -97,12 +97,12 @@ const handleStatusChange = async (leadId, newStatus) => {
           const currentDeals = await getDeals();
           const existingDeal = currentDeals.find(deal => deal.leadId === leadId.toString());
           
-          if (existingDeal) {
+if (existingDeal) {
             // Update existing deal to the new stage
             await updateDeal(existingDeal.Id, { stage: targetStage });
-toast.success(`Lead status updated and deal moved to ${targetStage} stage!`);
+            toast.success(`Lead status updated and deal moved to ${targetStage} stage!`);
           } else {
-// Create new deal in the target stage
+            // Create new deal in the target stage
             const dealData = {
               name: `${updatedLead.websiteUrl} Deal`,
               leadName: updatedLead.websiteUrl,
@@ -115,6 +115,7 @@ toast.success(`Lead status updated and deal moved to ${targetStage} stage!`);
               edition: updatedLead.edition || "Select Edition"
             };
             await createDeal(dealData);
+            toast.success(`Lead status updated and deal created in ${targetStage} stage!`);
           }
         } catch (dealError) {
           console.error("Failed to handle deal operation:", dealError);
