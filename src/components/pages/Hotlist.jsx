@@ -26,7 +26,10 @@ const Hotlist = () => {
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
   const [updateTimeouts, setUpdateTimeouts] = useState({});
-
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   useEffect(() => {
     loadLeads();
   }, []);
@@ -279,7 +282,23 @@ let filtered = leads.filter(lead => {
         return aValue < bValue ? 1 : -1;
       }
     });
-  }, [leads, searchQuery, statusFilter, fundingFilter, sortBy, sortOrder]);
+}, [leads, searchQuery, statusFilter, fundingFilter, sortBy, sortOrder]);
+
+  // Pagination calculations
+  const totalItems = filteredAndSortedData.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedData = filteredAndSortedData.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1); // Reset to first page when page size changes
+  };
 
   if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadLeads} />;
@@ -289,11 +308,11 @@ let filtered = leads.filter(lead => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
+<div>
           <h1 className="text-2xl font-bold text-gray-900">Hotlist</h1>
           <p className="text-sm text-gray-600">
-            {filteredAndSortedData.length} high-priority leads
+            {totalItems} high-priority leads ({paginatedData.length} showing)
           </p>
-        </div>
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
@@ -371,9 +390,89 @@ let filtered = leads.filter(lead => {
         </Card>
       )}
 
+{/* Pagination Controls - Top */}
+      {totalItems > 0 && (
+        <Card className="p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-700">Show:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+                  className="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <span className="text-sm text-gray-700">per page</span>
+              </div>
+              <div className="text-sm text-gray-600">
+                Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} leads
+              </div>
+            </div>
+            
+            {totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-1"
+                >
+                  <ApperIcon name="ChevronLeft" size={16} />
+                  Previous
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                    let pageNumber;
+                    if (totalPages <= 5) {
+                      pageNumber = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNumber = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNumber = totalPages - 4 + i;
+                    } else {
+                      pageNumber = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <Button
+                        key={pageNumber}
+                        variant={currentPage === pageNumber ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(pageNumber)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {pageNumber}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-1"
+                >
+                  Next
+                  <ApperIcon name="ChevronRight" size={16} />
+                </Button>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
       {/* Table */}
       <Card>
-        {filteredAndSortedData.length === 0 ? (
+        {totalItems === 0 ? (
           <Empty
             icon="Flame"
             title="No hotlist leads found"
@@ -496,7 +595,7 @@ let filtered = leads.filter(lead => {
                 </tr>
               </thead>
               <tbody>
-{filteredAndSortedData.map((lead) => (
+{paginatedData.map((lead) => (
                   <tr key={lead.Id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="p-4">
                       <input
@@ -553,9 +652,13 @@ let filtered = leads.filter(lead => {
                       </select>
                     </td>
 <td className="p-4">
-                      <span className="text-sm text-gray-900">
-                        {lead.arr || "—"}
-                      </span>
+                      <Input
+                        type="number"
+                        value={lead.arr || ''}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'arr', e.target.value)}
+                        className="w-20 px-2 py-1 text-sm"
+                        placeholder="0"
+                      />
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-gray-700">{lead.category}</span>
@@ -623,9 +726,71 @@ let filtered = leads.filter(lead => {
                 ))}
               </tbody>
             </table>
-          </div>
+</div>
         )}
       </Card>
+
+      {/* Pagination Controls - Bottom */}
+      {totalItems > 0 && totalPages > 1 && (
+        <Card className="p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="text-sm text-gray-600">
+              Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} leads
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="flex items-center gap-1"
+              >
+                <ApperIcon name="ChevronLeft" size={16} />
+                Previous
+              </Button>
+              
+              <div className="flex items-center gap-1">
+                {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                  let pageNumber;
+                  if (totalPages <= 5) {
+                    pageNumber = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNumber = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNumber = totalPages - 4 + i;
+                  } else {
+                    pageNumber = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={pageNumber}
+                      variant={currentPage === pageNumber ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNumber)}
+                      className="w-8 h-8 p-0"
+                    >
+                      {pageNumber}
+                    </Button>
+                  );
+                })}
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-1"
+              >
+                Next
+                <ApperIcon name="ChevronRight" size={16} />
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Bulk Delete Confirmation Dialog */}
       {showBulkDeleteDialog && (

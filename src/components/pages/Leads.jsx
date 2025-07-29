@@ -25,7 +25,7 @@ const [searchTerm, setSearchTerm] = useState("");
   const [teamSizeFilter, setTeamSizeFilter] = useState("all");
   const [sortBy, setSortBy] = useState("websiteUrl");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [showAddForm, setShowAddForm] = useState(false);
+const [showAddForm, setShowAddForm] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
 const [emptyRows, setEmptyRows] = useState([]);
   const [nextTempId, setNextTempId] = useState(-1);
@@ -104,14 +104,14 @@ if (existingDeal) {
           } else {
             // Create new deal in the target stage
             const dealData = {
-              name: `${updatedLead.websiteUrl} Deal`,
-              leadName: updatedLead.websiteUrl,
+name: `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
+              leadName: updatedLead.websiteUrl.replace('https://', '').replace('www.', ''),
               leadId: leadId.toString(),
               value: updatedLead.arr || 0,
               stage: targetStage,
               assignedRep: "Unassigned",
-              startMonth: new Date().getMonth() + 1,
-              endMonth: new Date().getMonth() + 3,
+              startMonth: new Date().toISOString().split('T')[0],
+              endMonth: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
               edition: updatedLead.edition || "Select Edition"
             };
             await createDeal(dealData);
