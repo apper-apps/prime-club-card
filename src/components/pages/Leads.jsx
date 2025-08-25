@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { createLead, deleteLead, getLeads, updateLead } from "@/services/api/leadsService";
-import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
-import Hotlist from "@/components/pages/Hotlist";
+import Card from "@/components/atoms/Card";
+import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
 import Input from "@/components/atoms/Input";
-import Button from "@/components/atoms/Button";
-import Card from "@/components/atoms/Card";
+import Hotlist from "@/components/pages/Hotlist";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
+import { createLead, deleteLead, getLeads, updateLead } from "@/services/api/leadsService";
 
 const Leads = () => {
   const [data, setData] = useState([]);
@@ -91,17 +91,22 @@ const handleStatusChange = async (leadId, newStatus) => {
       // Check if status maps to a pipeline stage
       const targetStage = statusToStageMap[newStatus];
       
-      if (targetStage) {
+if (targetStage) {
         try {
           // Get current deals to check if one exists for this lead
           const currentDeals = await getDeals();
           const existingDeal = currentDeals.find(deal => deal.leadId === leadId.toString());
           
-if (existingDeal) {
-            // Update existing deal to the new stage
-            await updateDeal(existingDeal.Id, { stage: targetStage });
-            toast.success(`Lead status updated and deal moved to ${targetStage} stage!`);
-} else {
+          if (existingDeal) {
+            // Check if the deal is already in the target stage
+            if (existingDeal.stage === targetStage) {
+              toast.info(`Lead status updated. Deal is already in ${targetStage} stage.`);
+            } else {
+              // Update existing deal to the new stage
+              await updateDeal(existingDeal.Id, { stage: targetStage });
+              toast.success(`Lead status updated and deal moved to ${targetStage} stage!`);
+            }
+          } else {
             // Create new deal in the target stage
             const dealData = {
               name: updatedLead.productName || `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
