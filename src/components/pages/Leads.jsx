@@ -101,11 +101,11 @@ if (existingDeal) {
             // Update existing deal to the new stage
             await updateDeal(existingDeal.Id, { stage: targetStage });
             toast.success(`Lead status updated and deal moved to ${targetStage} stage!`);
-          } else {
+} else {
             // Create new deal in the target stage
             const dealData = {
-name: `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
-              leadName: updatedLead.websiteUrl.replace('https://', '').replace('www.', ''),
+              name: updatedLead.productName || `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
+              leadName: updatedLead.name || updatedLead.websiteUrl.replace('https://', '').replace('www.', ''),
               leadId: leadId.toString(),
               value: updatedLead.arr || 0,
               stage: targetStage,

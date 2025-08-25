@@ -90,10 +90,10 @@ const targetStage = statusToStageMap[newStatus];
         if (existingDeal) {
           await updateDeal(existingDeal.Id, { stage: targetStage });
           toast.info(`Deal stage updated to ${targetStage}`);
-        } else {
+} else {
           const dealData = {
-            name: `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
-            leadName: updatedLead.websiteUrl.replace('https://', '').replace('www.', ''),
+            name: updatedLead.productName || `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
+            leadName: updatedLead.name || updatedLead.websiteUrl.replace('https://', '').replace('www.', ''),
             leadId: leadId.toString(),
             value: updatedLead.arr || 0,
             stage: targetStage,
