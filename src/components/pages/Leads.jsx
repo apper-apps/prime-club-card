@@ -1569,6 +1569,18 @@ return (
           </button>
         </div>
 <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Product Name
+            </label>
+            <Input
+              type="text"
+              value={formData.productName}
+              onChange={(e) => setFormData({...formData, productName: e.target.value})}
+              placeholder="Enter product name"
+              className="w-full"
+            />
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1743,18 +1755,6 @@ return (
               <option value="Limited Edition">Limited Edition</option>
             </select>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Product Name
-            </label>
-            <Input
-              type="text"
-              value={formData.productName}
-              onChange={(e) => setFormData({...formData, productName: e.target.value})}
-              placeholder="Enter product name"
-              className="w-full"
-            />
-          </div>
 <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel
@@ -1802,6 +1802,19 @@ return (
           </button>
         </div>
 <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+                <Input
+                    type="text"
+                    value={formData.productName}
+                    onChange={e => setFormData({
+                        ...formData,
+                        productName: e.target.value
+                    })}
+                    placeholder="Enter product name"
+                    className="w-full"
+                />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
 <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
@@ -1960,19 +1973,6 @@ return (
                     <option value="Collector's Edition">Collector's Edition</option>
                     <option value="Limited Edition">Limited Edition</option>
                 </select>
-            </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-                <Input
-                    type="text"
-                    value={formData.productName}
-                    onChange={e => setFormData({
-                        ...formData,
-                        productName: e.target.value
-                    })}
-                    placeholder="Enter product name"
-                    className="w-full"
-                />
             </div>
 <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
                 <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
