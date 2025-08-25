@@ -3,20 +3,20 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import ApperIcon from "@/components/ApperIcon";
-import Badge from "@/components/atoms/Badge";
-import Button from "@/components/atoms/Button";
-import Card from "@/components/atoms/Card";
-import Empty from "@/components/ui/Empty";
-import Error from "@/components/ui/Error";
-import Loading from "@/components/ui/Loading";
 import DealCard from "@/components/molecules/DealCard";
 import DealEditModal from "@/components/molecules/DealEditModal";
+import Card from "@/components/atoms/Card";
+import Button from "@/components/atoms/Button";
+import Badge from "@/components/atoms/Badge";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import { getDeals, updateDeal } from "@/services/api/dealsService";
 import salesRepsData from "@/services/mockData/salesReps.json";
-import dashboardData from "@/services/mockData/dashboard.json";
 import dealsData from "@/services/mockData/deals.json";
 import leadsData from "@/services/mockData/leads.json";
 import contactsData from "@/services/mockData/contacts.json";
-import { getDeals, updateDeal } from "@/services/api/dealsService";
+import dashboardData from "@/services/mockData/dashboard.json";
 
 const Pipeline = () => {
   const [deals, setDeals] = useState([]);
@@ -86,16 +86,19 @@ const Pipeline = () => {
     setShowEditModal(true);
   };
 
-  const handleSaveDeal = async (dealId, updatedData) => {
-    const updatedDeal = await updateDeal(dealId, updatedData);
-    
-    const updatedDeals = deals.map(deal =>
-      deal.Id === dealId ? { ...deal, ...updatedData } : deal
-    );
-    setDeals(updatedDeals);
-  };
+const handleSaveDeal = async (dealId, updatedData) => {
+const updatedDeal = await updateDeal(dealId, updatedData);
 
-  const handleCloseEditModal = () => {
+// Update the state with the new deal data
+const updatedDeals = deals.map(deal =>
+deal.Id === dealId ? { ...deal, ...updatedData } : deal
+);
+setDeals(updatedDeals);
+setShowEditModal(false);
+setEditingDeal(null);
+};
+
+const handleCloseEditModal = () => {
     setShowEditModal(false);
     setEditingDeal(null);
   };
@@ -196,10 +199,10 @@ key={deal.Id}
       <DealEditModal
         isOpen={showEditModal}
         onClose={handleCloseEditModal}
-        deal={editingDeal}
+deal={editingDeal}
         onSave={handleSaveDeal}
       />
-</div>
+    </div>
   );
 };
 

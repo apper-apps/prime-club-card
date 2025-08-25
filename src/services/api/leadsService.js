@@ -92,21 +92,22 @@ export const createLead = async (leadData) => {
   leadHistoryTracker.set(normalizedUrl, true);
   const maxId = Math.max(...leads.map(l => l.Id), 0);
 const newLead = {
-    name: leadData.name || "",
-    email: leadData.email || "",
-    websiteUrl: leadData.websiteUrl,
-    teamSize: leadData.teamSize || "1-3",
-    arr: leadData.arr || 0,
-    category: leadData.category || "Other",
-    linkedinUrl: leadData.linkedinUrl || "",
-    status: leadData.status || "Keep an Eye",
-    fundingType: leadData.fundingType || "Bootstrapped",
-    edition: leadData.edition || "Select Edition",
-    followUpDate: leadData.followUpDate || null,
-    productName: leadData.productName || "",
-    Id: maxId + 1,
-    createdAt: new Date().toISOString()
-  };
+name: leadData.name || "",
+email: leadData.email || "",
+websiteUrl: leadData.websiteUrl,
+teamSize: leadData.teamSize || "1-3",
+arr: leadData.arr || 0,
+category: leadData.category || "Other",
+linkedinUrl: leadData.linkedinUrl || "",
+status: leadData.status || "Keep an Eye",
+fundingType: leadData.fundingType || "Bootstrapped",
+edition: leadData.edition || "Select Edition",
+followUpDate: leadData.followUpDate || null,
+productName: leadData.productName || "",
+addedBy: leadData.addedBy || 1, // Default to first sales rep if not specified
+Id: maxId + 1,
+createdAt: new Date().toISOString()
+};
   
   leads.push(newLead);
   

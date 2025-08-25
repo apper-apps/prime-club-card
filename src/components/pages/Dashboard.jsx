@@ -9,22 +9,18 @@ import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
-import Analytics from "@/components/pages/Analytics";
-import Pipeline from "@/components/pages/Pipeline";
-import Leads from "@/components/pages/Leads";
 import MetricCard from "@/components/molecules/MetricCard";
 import { getSalesReps } from "@/services/api/salesRepService";
 import { getDailyWebsiteUrls } from "@/services/api/reportService";
-import { getPendingFollowUps } from "@/services/api/leadsService";
 import { 
-  getDashboardMetrics, 
-  getDetailedRecentActivity, 
-  getLeadPerformanceChart, 
-  getPendingFollowUps as getDashboardPendingFollowUps, 
-  getRecentActivity, 
-  getRevenueTrendsData, 
-  getTeamPerformanceRankings, 
-  getTodaysMeetings 
+getDashboardMetrics, 
+getDetailedRecentActivity, 
+getLeadPerformanceChart, 
+getPendingFollowUps as getDashboardPendingFollowUps, 
+getRecentActivity, 
+getRevenueTrendsData, 
+getTeamPerformanceRankings, 
+getTodaysMeetings 
 } from "@/services/api/dashboardService";
 const Dashboard = () => {
   const navigate = useNavigate();

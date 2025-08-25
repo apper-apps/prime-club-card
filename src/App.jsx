@@ -22,50 +22,52 @@ class ErrorBoundary extends Component {
     };
   }
 
-  static getDerivedStateFromError(error) {
-    // Check if it's a canvas-related error from external scripts
-    const isCanvasError = error.message?.includes('canvas') || 
-                         error.message?.includes('viewport') ||
-                         error.message?.includes('drawImage') ||
-                         error.message?.includes('InvalidStateError');
-    
-    return { 
-      hasError: true, 
-      error,
-      isCanvasError
-    };
-  }
+static getDerivedStateFromError(error) {
+// Check if it's a canvas-related error from external scripts
+const isCanvasError = error.message?.includes('canvas') || 
+error.message?.includes('viewport') ||
+error.message?.includes('drawImage') ||
+error.message?.includes('InvalidStateError');
 
-  componentDidCatch(error, errorInfo) {
-    // Enhanced error logging with categorization
-    const errorDetails = {
-      message: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-      url: window.location.href
-    };
+// For canvas errors, don't show error UI
+if (isCanvasError) {
+return { 
+hasError: false, 
+error: null,
+isCanvasError: true 
+};
+}
 
-    // Handle canvas and viewport errors from external scripts
-    if (error.message?.includes('canvas') || 
-        error.message?.includes('viewport') || 
-        error.message?.includes('drawImage') ||
-        error.message?.includes('InvalidStateError')) {
-      console.warn('External script canvas error caught:', {
-        ...errorDetails,
-        type: 'CANVAS_ERROR',
-        source: 'EXTERNAL_SCRIPT'
-      });
-      
-      // For canvas errors, don't show error UI - just log and continue
-      this.setState({ 
-        hasError: false, 
-        error: null,
-        isCanvasError: true 
-      });
-      return;
-    }
+return { 
+hasError: true, 
+error,
+isCanvasError: false
+};
+}
+
+componentDidCatch(error, errorInfo) {
+// Enhanced error logging with categorization
+const errorDetails = {
+message: error.message,
+stack: error.stack,
+componentStack: errorInfo.componentStack,
+timestamp: new Date().toISOString(),
+userAgent: navigator.userAgent,
+url: window.location.href
+};
+
+// Handle canvas and viewport errors from external scripts
+if (error.message?.includes('canvas') || 
+error.message?.includes('viewport') || 
+error.message?.includes('drawImage') ||
+error.message?.includes('InvalidStateError')) {
+console.warn('External script canvas error caught:', {
+...errorDetails,
+type: 'CANVAS_ERROR',
+source: 'EXTERNAL_SCRIPT'
+});
+return;
+}
 
     // Log other application errors
     console.error('Application error:', errorDetails);
