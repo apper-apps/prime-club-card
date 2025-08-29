@@ -1,5 +1,18 @@
-import leadsData from "@/services/mockData/leads.json";
-import salesRepsData from "@/services/mockData/salesReps.json";
+// Initialize ApperClient for database operations
+const { ApperClient } = window.ApperSDK;
+const apperClient = new ApperClient({
+  apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+  apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+});
+
+// Generate mock sales rep data since sales_rep_c table doesn't have required structure
+const generateMockSalesReps = () => [
+  { Id: 1, name: "John Smith", leads_contacted_c: 45, meetings_booked_c: 12, deals_closed_c: 8 },
+  { Id: 2, name: "Sarah Johnson", leads_contacted_c: 38, meetings_booked_c: 15, deals_closed_c: 10 },
+  { Id: 3, name: "Mike Davis", leads_contacted_c: 52, meetings_booked_c: 18, deals_closed_c: 14 },
+  { Id: 4, name: "Emily Wilson", leads_contacted_c: 41, meetings_booked_c: 11, deals_closed_c: 7 },
+  { Id: 5, name: "Alex Chen", leads_contacted_c: 35, meetings_booked_c: 9, deals_closed_c: 5 }
+];
 import { getFreshLeadsOnly } from "./leadsService";
 
 // Utility function to clean website URLs by removing trailing slash
@@ -12,7 +25,36 @@ const cleanWebsiteUrl = (url) => {
 export const getWebsiteUrlActivity = async (filters = {}) => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 300));
-  let filteredData = [...leadsData];
+// Fetch leads from database
+  const response = await apperClient.fetchRecords('lead_c', {
+    fields: [
+      { field: { Name: "Name" } },
+      { field: { Name: "email_c" } },
+      { field: { Name: "website_url_c" } },
+      { field: { Name: "category_c" } },
+      { field: { Name: "arr_c" } },
+      { field: { Name: "status_c" } },
+      { field: { Name: "added_by_name_c" } },
+      { field: { Name: "CreatedOn" } }
+    ]
+  });
+  
+  if (!response.success) {
+    throw new Error(response.message);
+  }
+  
+  // Transform database fields to expected format
+  let filteredData = response.data.map(lead => ({
+    Id: lead.Id,
+    name: lead.Name,
+    email: lead.email_c,
+    websiteUrl: lead.website_url_c,
+    category: lead.category_c,
+    arr: lead.arr_c,
+    status: lead.status_c,
+    addedByName: lead.added_by_name_c,
+    createdAt: lead.CreatedOn
+  }));
   
   // Filter by date range
   if (filters.startDate || filters.endDate) {
@@ -114,7 +156,7 @@ export const getSalesRepsForFilter = async () => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 200));
   
-  return [...salesRepsData];
+  return generateMockSalesReps();
 };
 
 // Helper functions
@@ -140,7 +182,36 @@ export const getDailyWebsiteUrls = async (salesRepId, date) => {
   await new Promise(resolve => setTimeout(resolve, 300));
   
   const targetDate = new Date(date);
-  let filteredData = [...leadsData];
+// Fetch leads from database
+  const response = await apperClient.fetchRecords('lead_c', {
+    fields: [
+      { field: { Name: "Name" } },
+      { field: { Name: "email_c" } },
+      { field: { Name: "website_url_c" } },
+      { field: { Name: "category_c" } },
+      { field: { Name: "arr_c" } },
+      { field: { Name: "status_c" } },
+      { field: { Name: "added_by_name_c" } },
+      { field: { Name: "CreatedOn" } }
+    ]
+  });
+  
+  if (!response.success) {
+    throw new Error(response.message);
+  }
+  
+  // Transform database fields to expected format
+  let filteredData = response.data.map(lead => ({
+    Id: lead.Id,
+    name: lead.Name,
+    email: lead.email_c,
+    websiteUrl: lead.website_url_c,
+    category: lead.category_c,
+    arr: lead.arr_c,
+    status: lead.status_c,
+    addedByName: lead.added_by_name_c,
+    createdAt: lead.CreatedOn
+  }));
   
   // Filter by sales rep
   if (salesRepId) {
@@ -174,7 +245,8 @@ export const getDailyWebsiteUrls = async (salesRepId, date) => {
 
 // Generate sample data for testing Daily Leads Report
 const generateSampleDailyData = (salesRepId, targetDate) => {
-  const salesRep = salesRepsData.find(rep => rep.Id === salesRepId);
+const salesReps = generateMockSalesReps();
+  const salesRep = salesReps.find(rep => rep.Id === salesRepId);
   if (!salesRep) return [];
   
   const sampleWebsites = [
