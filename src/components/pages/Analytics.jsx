@@ -2,24 +2,25 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Chart from "react-apexcharts";
 import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
+import MetricCard from "@/components/molecules/MetricCard";
 import Card from "@/components/atoms/Card";
+import Button from "@/components/atoms/Button";
+import Leads from "@/components/pages/Leads";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
-import Leads from "@/components/pages/Leads";
-import MetricCard from "@/components/molecules/MetricCard";
-import salesRepData from "@/services/mockData/salesReps.json";
 import { getDailyLeadsChart, getLeadsAnalytics, getLeadsMetrics, getUserPerformance } from "@/services/api/analyticsService";
+import { getSalesReps } from "@/services/api/salesRepService";
 import { getLeads } from "@/services/api/leadsService";
 
 const Analytics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [chartData, setChartData] = useState(null);
+const [chartData, setChartData] = useState(null);
   const [metrics, setMetrics] = useState(null);
   const [filteredLeads, setFilteredLeads] = useState([]);
   const [userPerformance, setUserPerformance] = useState([]);
-  
+  const [salesReps, setSalesReps] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
 // Filters
   const [selectedUser, setSelectedUser] = useState('all');
   const [selectedPeriod, setSelectedPeriod] = useState('week');
@@ -40,7 +41,7 @@ const Analytics = () => {
     { value: 60, label: '60 Days' }
   ];
 
-  const loadAnalyticsData = async () => {
+const loadAnalyticsData = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -56,13 +57,22 @@ const Analytics = () => {
         getLeadsMetrics(selectedUser),
         getUserPerformance()
       ]);
-
-      setFilteredLeads(analyticsData.leads);
-      setChartData(chartResult);
+      
+      // Load sales reps and filtered leads data
+      const [salesRepsData, leadsData] = await Promise.all([
+        getSalesReps(),
+        getLeads({ period: selectedPeriod, userId: selectedUser, limit: 10 })
+      ]);
+      
       setMetrics(metricsData);
+      setChartData(chartResult);
+      setAnalytics(analyticsData);
       setUserPerformance(performanceData);
+      setSalesReps(salesRepsData);
+      setFilteredLeads(leadsData?.data || []);
     } catch (err) {
-      setError(err.message);
+      console.error('Failed to load analytics data:', err);
+      setError(err.message || 'Failed to load analytics data');
     } finally {
       setLoading(false);
     }
@@ -149,9 +159,9 @@ useEffect(() => {
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
           >
             <option value="all">All Sales Reps</option>
-            {salesRepData.map(rep => (
+{salesReps.map(rep => (
               <option key={rep.Id} value={rep.Id.toString()}>
-                {rep.name}
+                {rep.Name}
               </option>
             ))}
           </select>
@@ -343,9 +353,9 @@ useEffect(() => {
             <h3 className="text-lg font-semibold text-gray-900">
               Recent Leads
             </h3>
-            <p className="text-sm text-gray-600 mt-1">
+<p className="text-sm text-gray-600 mt-1">
               {selectedPeriod === 'all' ? 'Latest' : periods.find(p => p.value === selectedPeriod)?.label} leads
-              {selectedUser !== 'all' && ` by ${salesRepData.find(r => r.Id.toString() === selectedUser)?.name}`}
+              {selectedUser !== 'all' && ` by ${salesReps.find(r => r.Id.toString() === selectedUser)?.Name || 'Unknown Rep'}`}
             </p>
           </div>
           
