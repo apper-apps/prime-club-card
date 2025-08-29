@@ -67,8 +67,8 @@ const DealCard = ({ deal, index, onEdit }) => {
             </div>
             
 <div className="flex items-center justify-between mb-3">
-              <span className="text-lg font-bold text-green-600">
-{formatCurrency(deal.value_c)}
+<span className="text-lg font-bold text-green-600">
+                {formatCurrency(deal.value_c || 0)}
               </span>
 {!["Connected", "Locked", "Meeting Done"].includes(deal.stage_c) && (
                 <Badge variant={getStageColor(deal.stage_c)} size="sm">
@@ -79,12 +79,12 @@ const DealCard = ({ deal, index, onEdit }) => {
             
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-<Avatar name={deal.assigned_rep_c} size="sm" />
-                <span className="ml-2 text-sm text-gray-600">{deal.assigned_rep_c}</span>
+<Avatar name={deal.assigned_rep_c || 'Unassigned'} size="sm" />
+                <span className="ml-2 text-sm text-gray-600">{deal.assigned_rep_c || 'Unassigned'}</span>
               </div>
               <div className="flex items-center text-xs text-gray-500">
                 <ApperIcon name="Calendar" size={12} className="mr-1" />
-<span>{new Date(deal.CreatedOn).toLocaleDateString()}</span>
+<span>{deal.CreatedOn ? new Date(deal.CreatedOn).toLocaleDateString() : 'N/A'}</span>
               </div>
             </div>
           </Card>

@@ -12,11 +12,6 @@ import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Loading from "@/components/ui/Loading";
 import { getDeals, updateDeal } from "@/services/api/dealsService";
-import salesRepsData from "@/services/mockData/salesReps.json";
-import dealsData from "@/services/mockData/deals.json";
-import leadsData from "@/services/mockData/leads.json";
-import contactsData from "@/services/mockData/contacts.json";
-import dashboardData from "@/services/mockData/dashboard.json";
 
 const Pipeline = () => {
   const [deals, setDeals] = useState([]);
@@ -67,11 +62,11 @@ const Pipeline = () => {
     const dealId = parseInt(draggableId);
     const newStage = destination.droppableId;
 
-    try {
-      await updateDeal(dealId, { stage: newStage });
+try {
+      await updateDeal(dealId, { stage_c: newStage });
       
       const updatedDeals = deals.map(deal =>
-        deal.Id === dealId ? { ...deal, stage: newStage } : deal
+        deal.Id === dealId ? { ...deal, stage_c: newStage } : deal
       );
       setDeals(updatedDeals);
       
@@ -87,28 +82,29 @@ const Pipeline = () => {
   };
 
 const handleSaveDeal = async (dealId, updatedData) => {
-const updatedDeal = await updateDeal(dealId, updatedData);
+    const updatedDeal = await updateDeal(dealId, updatedData);
 
-// Update the state with the new deal data
-const updatedDeals = deals.map(deal =>
-deal.Id === dealId ? { ...deal, ...updatedData } : deal
-);
-setDeals(updatedDeals);
-setShowEditModal(false);
-setEditingDeal(null);
-};
+    // Update the state with the new deal data
+    const updatedDeals = deals.map(deal =>
+      deal.Id === dealId ? { ...deal, ...updatedData } : deal
+    );
+    setDeals(updatedDeals);
+    setShowEditModal(false);
+    setEditingDeal(null);
+  };
 
 const handleCloseEditModal = () => {
     setShowEditModal(false);
     setEditingDeal(null);
   };
 
-  const getDealsForStage = (stage) => {
-    return deals.filter(deal => deal.stage === stage);
+const getDealsForStage = (stage) => {
+    return deals.filter(deal => deal.stage_c === stage);
   };
+  
   const getTotalValue = (stage) => {
     const stageDeals = getDealsForStage(stage);
-    return stageDeals.reduce((sum, deal) => sum + deal.value, 0);
+    return stageDeals.reduce((sum, deal) => sum + (deal.value_c || 0), 0);
   };
 
   const formatCurrency = (amount) => {
