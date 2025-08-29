@@ -66,12 +66,7 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <!-- Load Apper script after DOM is ready with enhanced error handling -->
-    <script 
-      defer 
-      onload="console.log('Apper script loaded successfully')" 
-      onerror="console.warn('Apper script failed to load - continuing without analytics')" 
-      src="https://cdn.apper.io/apper-dev-script/index.umd.js">
-    </script>
+<!-- Load Apper SDK script for authentication and data operations -->
+    <script src="%VITE_APPER_SDK_CDN_URL%"></script>
   </body>
 </html>

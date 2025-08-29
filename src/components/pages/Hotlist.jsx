@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { deleteLead, getLeads, updateLead } from "@/services/api/leadsService";
-import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
+import Card from "@/components/atoms/Card";
+import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
 import Input from "@/components/atoms/Input";
-import Button from "@/components/atoms/Button";
-import Card from "@/components/atoms/Card";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
+import { deleteLead, getLeads, updateLead } from "@/services/api/leadsService";
 
 const Hotlist = () => {
   const [leads, setLeads] = useState([]);
@@ -41,7 +41,7 @@ const Hotlist = () => {
       const response = await getLeads();
       
       // Filter only hotlist leads
-      const hotlistLeads = response.leads.filter(lead => lead.status === 'Hotlist');
+const hotlistLeads = response.leads.filter(lead => lead.status_c === 'Hotlist');
       setLeads(hotlistLeads);
       
       if (response.deduplicationResult) {
@@ -58,7 +58,7 @@ const Hotlist = () => {
 
   const handleStatusChange = async (leadId, newStatus) => {
     try {
-      const updatedLead = await updateLead(leadId, { status: newStatus });
+const updatedLead = await updateLead(leadId, { status_c: newStatus });
       
       if (newStatus === 'Hotlist') {
         // Update the lead in current list
@@ -167,7 +167,7 @@ const targetStage = statusToStageMap[newStatus];
       
       const updatedLead = await updateLead(leadId, updates);
       
-      if (field === 'status' && value !== 'Hotlist') {
+if (field === 'status_c' && value !== 'Hotlist') {
         // Remove from hotlist when status changes
         setLeads(prev => prev.filter(lead => lead.Id !== leadId));
       } else {
@@ -249,15 +249,14 @@ const targetStage = statusToStageMap[newStatus];
   const fundingTypeOptions = ['Bootstrapped', 'Pre-seed', 'Y Combinator', 'Seed', 'Series A', 'Series B', 'Series C'];
 
 const filteredAndSortedData = React.useMemo(() => {
-let filtered = leads.filter(lead => {
-      const matchesSearch = !searchQuery || 
-        lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.websiteUrl.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (lead.productName && lead.productName.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesStatus = !statusFilter || lead.status === statusFilter;
-      const matchesFunding = !fundingFilter || lead.fundingType === fundingFilter;
+  let filtered = leads.filter(lead => {
+    const matchesSearch = lead.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lead.email_c.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lead.website_url_c.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lead.category_c.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (lead.product_name_c && lead.product_name_c.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesStatus = !statusFilter || lead.status_c === statusFilter;
+      const matchesFunding = !fundingFilter || lead.funding_type_c === fundingFilter;
       
       return matchesSearch && matchesStatus && matchesFunding;
     });
@@ -266,12 +265,12 @@ let filtered = leads.filter(lead => {
       let aValue = a[sortBy];
       let bValue = b[sortBy];
       
-      if (sortBy === 'createdAt') {
+if (sortBy === 'CreatedOn') {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
       }
       
-      if (sortBy === 'arr') {
+if (sortBy === 'arr_c') {
         aValue = Number(aValue) || 0;
         bValue = Number(bValue) || 0;
       }
@@ -607,17 +606,17 @@ let filtered = leads.filter(lead => {
                     </td>
 <td className="p-4">
                       <span className="text-sm text-gray-900">
-                        {lead.productName || "—"}
+{lead.product_name_c || "—"}
                       </span>
                     </td>
 <td className="p-4">
                       <span className="text-sm font-medium text-gray-900">
-                        {lead.name || "—"}
+{lead.Name || "—"}
                       </span>
                     </td>
 <td className="p-4">
                       <span className="text-sm text-gray-900">
-                        {lead.email || "—"}
+{lead.email_c || "—"}
                       </span>
                     </td>
                     <td className="p-4">
@@ -625,7 +624,7 @@ let filtered = leads.filter(lead => {
                         <div className="flex items-center gap-2">
                           <ApperIcon name="Globe" size={16} className="text-gray-400" />
                           <span className="font-medium text-gray-900">
-                            {lead.websiteUrl.replace('https://', '').replace('www.', '')}
+{lead.website_url_c.replace('https://', '').replace('www.', '')}
                           </span>
                         </div>
                         {lead.linkedinUrl && (
@@ -642,8 +641,8 @@ let filtered = leads.filter(lead => {
                     </td>
                     <td className="p-4">
                       <select
-                        value={lead.teamSize}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'teamSize', e.target.value)}
+value={lead.team_size_c}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'team_size_c', e.target.value)}
                         className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                       >
                         {teamSizeOptions.map(size => (
@@ -654,18 +653,18 @@ let filtered = leads.filter(lead => {
 <td className="p-4">
                       <Input
                         type="number"
-                        value={lead.arr || ''}
+value={lead.arr_c || ''}
                         onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'arr', e.target.value)}
                         className="w-20 px-2 py-1 text-sm"
                         placeholder="0"
                       />
                     </td>
                     <td className="p-4">
-                      <span className="text-sm text-gray-700">{lead.category}</span>
+<span className="text-sm text-gray-700">{lead.category_c}</span>
                     </td>
                     <td className="p-4">
                       <select
-                        value={lead.status}
+value={lead.status_c}
                         onChange={(e) => handleStatusChange(lead.Id, e.target.value)}
                         className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                       >
@@ -676,8 +675,8 @@ let filtered = leads.filter(lead => {
                     </td>
                     <td className="p-4">
                       <select
-                        value={lead.fundingType}
-                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'fundingType', e.target.value)}
+value={lead.funding_type_c}
+                        onChange={(e) => handleFieldUpdateDebounced(lead.Id, 'funding_type_c', e.target.value)}
                         className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                       >
                         {fundingTypeOptions.map(type => (
@@ -688,9 +687,9 @@ let filtered = leads.filter(lead => {
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-900">
-                          {lead.linkedinUrl || "—"}
+{lead.linkedin_url_c || "—"}
                         </span>
-                        {lead.linkedinUrl && (
+                        {lead.linkedin_url_c && (
                           <a
                             href={lead.linkedinUrl}
                             target="_blank"
@@ -704,12 +703,12 @@ let filtered = leads.filter(lead => {
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-gray-900">
-                        {lead.followUpDate ? new Date(lead.followUpDate).toLocaleDateString() : "—"}
+{lead.follow_up_date_c ? new Date(lead.follow_up_date_c).toLocaleDateString() : "—"}
                       </span>
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-gray-700">
-                        {new Date(lead.createdAt).toLocaleDateString()}
+{new Date(lead.CreatedOn).toLocaleDateString()}
                       </span>
                     </td>
                     <td className="p-4">
