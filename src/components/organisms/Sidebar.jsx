@@ -146,7 +146,7 @@ const MobileSidebar = ({ navigation }) => {
 
 import { useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { AuthContext } from '../App';
+import { AuthContext } from '../../App';
 
 const UserSettings = ({ isCollapsed }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
