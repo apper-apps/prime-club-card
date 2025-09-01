@@ -1,8 +1,12 @@
-import leadsData from "@/services/mockData/leads.json";
-import salesRepData from "@/services/mockData/salesReps.json";
+// Initialize ApperClient for database operations
+const { ApperClient } = window.ApperSDK;
+const apperClient = new ApperClient({
+  apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+  apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+});
 
-let leads = [...leadsData];
-let salesReps = [...salesRepData];
+// Import mock data
+import { leads, salesReps } from '@/data/mockData';
 
 // Helper function to get date ranges
 const getDateRange = (period) => {
