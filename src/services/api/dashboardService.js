@@ -1,5 +1,5 @@
 // Dashboard Service - Centralized data management for dashboard components
-import salesRepsData from "@/services/mockData/salesReps.json";
+// ApperClient will be initialized within functions as needed
 import dashboardData from "@/services/mockData/dashboard.json";
 
 // Standardized API delay for consistent UX
@@ -220,13 +220,43 @@ export const getSalesFunnelAnalysis = async () => {
 export const getTeamPerformanceRankings = async () => {
   await simulateAPICall();
   
-  const fallback = salesRepsData.map(rep => ({
-    Id: rep.Id,
-    name: rep.name,
-    totalLeads: Math.floor(Math.random() * 100) + 10,
-    weekLeads: Math.floor(Math.random() * 20) + 1,
-    todayLeads: Math.floor(Math.random() * 5)
-  }));
+// Fetch live sales rep data from database as fallback
+  try {
+    const { ApperClient } = window.ApperSDK;
+    const apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+
+    const params = {
+      fields: [
+        { field: { Name: "Name" } },
+        { field: { Name: "leads_contacted_c" } },
+        { field: { Name: "meetings_booked_c" } },
+        { field: { Name: "deals_closed_c" } }
+      ]
+    };
+
+    const response = await apperClient.fetchRecords('sales_rep_c', params);
+    
+    if (!response.success) {
+      console.error('Failed to fetch sales reps:', response.message);
+      return [];
+    }
+
+    const fallback = response.data.map(rep => ({
+      Id: rep.Id,
+      name: rep.Name || 'Unknown Rep',
+      totalLeads: rep.leads_contacted_c || 0,
+      weekLeads: Math.floor((rep.leads_contacted_c || 0) * 0.2) + Math.floor(Math.random() * 5),
+      todayLeads: Math.floor((rep.leads_contacted_c || 0) * 0.05) + Math.floor(Math.random() * 3)
+    }));
+    
+    return fallback;
+  } catch (error) {
+    console.error('Error fetching sales reps data:', error);
+    return [];
+  }
   
   return safeServiceCall(async () => {
     const { getUserPerformance } = await import("@/services/api/analyticsService");
