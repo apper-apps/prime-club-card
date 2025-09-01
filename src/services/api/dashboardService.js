@@ -1,6 +1,11 @@
 // Dashboard Service - Centralized data management for dashboard components
 // ApperClient will be initialized within functions as needed
-import dashboardData from "@/services/mockData/dashboard.json";
+// Initialize ApperClient for database operations
+const { ApperClient } = window.ApperSDK;
+const apperClient = new ApperClient({
+  apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+  apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+});
 
 // Standardized API delay for consistent UX
 const API_DELAY = 300;
@@ -73,50 +78,125 @@ const validateUserId = (userId) => {
 export const getDashboardMetrics = async () => {
   await simulateAPICall();
   
-  if (!dashboardData?.metrics || !Array.isArray(dashboardData.metrics)) {
-    throw new Error('Invalid dashboard metrics data structure');
+  try {
+    const params = {
+      fields: [
+        { field: { Name: "Name" } },
+        { field: { Name: "title_c" } },
+        { field: { Name: "value_c" } },
+        { field: { Name: "icon_c" } },
+        { field: { Name: "trend_c" } },
+        { field: { Name: "trend_value_c" } },
+        { field: { Name: "color_c" } }
+      ],
+      pagingInfo: { limit: 20, offset: 0 }
+    };
+    
+    const response = await apperClient.fetchRecords('dashboard_metric_c', params);
+    
+    if (!response.success) {
+      console.error('Error fetching dashboard metrics:', response.message);
+      return [];
+    }
+    
+    return (response.data || []).map(metric => ({
+      id: metric.Id,
+      title: metric.title_c || metric.Name || 'Untitled Metric',
+      value: metric.value_c || '0',
+      icon: metric.icon_c || 'BarChart3',
+      trend: metric.trend_c || 'neutral',
+      trendValue: metric.trend_value_c || '0%',
+      color: metric.color_c || 'primary'
+    }));
+  } catch (error) {
+    console.error('Error fetching dashboard metrics:', error);
+    return [];
   }
-  
-  return dashboardData.metrics.map(metric => ({
-    ...metric,
-    id: metric.id || Math.random(),
-    value: metric.value || '0',
-    trend: metric.trend || 'neutral',
-    trendValue: metric.trendValue || '0%'
-  }));
 };
 
 // Recent activity from static data
 export const getRecentActivity = async () => {
   await simulateAPICall();
   
-  if (!dashboardData?.recentActivity || !Array.isArray(dashboardData.recentActivity)) {
-    throw new Error('Invalid recent activity data structure');
+  try {
+    const params = {
+      fields: [
+        { field: { Name: "Name" } },
+        { field: { Name: "title_c" } },
+        { field: { Name: "type_c" } },
+        { field: { Name: "time_c" } },
+        { field: { Name: "CreatedOn" } }
+      ],
+      orderBy: [{ fieldName: "CreatedOn", sorttype: "DESC" }],
+      pagingInfo: { limit: 10, offset: 0 }
+    };
+    
+    const response = await apperClient.fetchRecords('recent_activity_c', params);
+    
+    if (!response.success) {
+      console.error('Error fetching recent activity:', response.message);
+      return [];
+    }
+    
+    return (response.data || []).map(activity => ({
+      id: activity.Id,
+      title: activity.title_c || activity.Name || 'Untitled Activity',
+      time: activity.time_c || new Date(activity.CreatedOn).toLocaleTimeString(),
+      type: activity.type_c || 'general'
+    }));
+  } catch (error) {
+    console.error('Error fetching recent activity:', error);
+    return [];
   }
-  
-  return dashboardData.recentActivity.map(activity => ({
-    ...activity,
-    id: activity.id || Math.random(),
-    time: activity.time || 'Unknown time',
-    type: activity.type || 'general'
-  }));
 };
 
 // Today's meetings from static data
 export const getTodaysMeetings = async () => {
   await simulateAPICall();
   
-  if (!dashboardData?.todaysMeetings || !Array.isArray(dashboardData.todaysMeetings)) {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    
+    const params = {
+      fields: [
+        { field: { Name: "Name" } },
+        { field: { Name: "title_c" } },
+        { field: { Name: "time_c" } },
+        { field: { Name: "duration_c" } },
+        { field: { Name: "type_c" } },
+        { field: { Name: "client_c" } },
+        { field: { Name: "CreatedOn" } }
+      ],
+      where: [
+        {
+          FieldName: "CreatedOn",
+          Operator: "RelativeMatch",
+          Values: ["Today"]
+        }
+      ],
+      orderBy: [{ fieldName: "time_c", sorttype: "ASC" }],
+      pagingInfo: { limit: 20, offset: 0 }
+    };
+    
+    const response = await apperClient.fetchRecords('meeting_c', params);
+    
+    if (!response.success) {
+      console.error('Error fetching today\'s meetings:', response.message);
+      return [];
+    }
+    
+    return (response.data || []).map(meeting => ({
+      id: meeting.Id,
+      title: meeting.title_c || meeting.Name || 'Untitled Meeting',
+      time: meeting.time_c || 'TBD',
+      duration: meeting.duration_c || '30 mins',
+      type: meeting.type_c || 'meeting',
+      client: meeting.client_c || 'Unknown Client'
+    }));
+  } catch (error) {
+    console.error('Error fetching today\'s meetings:', error);
     return [];
   }
-  
-  return dashboardData.todaysMeetings.map(meeting => ({
-    ...meeting,
-    id: meeting.id || Math.random(),
-    title: meeting.title || 'Untitled Meeting',
-    time: meeting.time || 'TBD',
-    client: meeting.client || meeting.title || 'Unknown Client'
-  }));
 };
 
 // Pending follow-ups from leads service
@@ -337,7 +417,7 @@ return {
 export const getDetailedRecentActivity = async () => {
   await simulateAPICall();
   
-  const fallback = dashboardData.recentActivity || [];
+const fallback = [];
   
   return safeServiceCall(async () => {
     const { getWebsiteUrlActivity } = await import("@/services/api/reportService");
