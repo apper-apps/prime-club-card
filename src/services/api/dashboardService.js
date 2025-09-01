@@ -220,50 +220,45 @@ export const getSalesFunnelAnalysis = async () => {
 export const getTeamPerformanceRankings = async () => {
   await simulateAPICall();
   
-// Fetch live sales rep data from database as fallback
-  try {
-    const { ApperClient } = window.ApperSDK;
-    const apperClient = new ApperClient({
-      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
-      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-    });
-
-    const params = {
-      fields: [
-        { field: { Name: "Name" } },
-        { field: { Name: "leads_contacted_c" } },
-        { field: { Name: "meetings_booked_c" } },
-        { field: { Name: "deals_closed_c" } }
-      ]
-    };
-
-    const response = await apperClient.fetchRecords('sales_rep_c', params);
-    
-    if (!response.success) {
-      console.error('Failed to fetch sales reps:', response.message);
-      return [];
-    }
-
-    const fallback = response.data.map(rep => ({
-      Id: rep.Id,
-      name: rep.Name || 'Unknown Rep',
-      totalLeads: rep.leads_contacted_c || 0,
-      weekLeads: Math.floor((rep.leads_contacted_c || 0) * 0.2) + Math.floor(Math.random() * 5),
-      todayLeads: Math.floor((rep.leads_contacted_c || 0) * 0.05) + Math.floor(Math.random() * 3)
-    }));
-    
-    return fallback;
-  } catch (error) {
-    console.error('Error fetching sales reps data:', error);
-    return [];
-  }
-  
   return safeServiceCall(async () => {
+    // First try to fetch live sales rep data from database
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "leads_contacted_c" } },
+          { field: { Name: "meetings_booked_c" } },
+          { field: { Name: "deals_closed_c" } }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('sales_rep_c', params);
+      
+      if (response.success && response.data && response.data.length > 0) {
+        return response.data.map(rep => ({
+          Id: rep.Id,
+          name: rep.Name || 'Unknown Rep',
+          totalLeads: rep.leads_contacted_c || 0,
+          weekLeads: Math.floor((rep.leads_contacted_c || 0) * 0.2) + Math.floor(Math.random() * 5),
+          todayLeads: Math.floor((rep.leads_contacted_c || 0) * 0.05) + Math.floor(Math.random() * 3)
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching sales reps from database:', error);
+    }
+    
+    // Fallback to analytics service
     const { getUserPerformance } = await import("@/services/api/analyticsService");
     const performanceData = await getUserPerformance();
     
     if (!Array.isArray(performanceData)) {
-      return fallback;
+      return [];
     }
     
     return performanceData
@@ -275,7 +270,7 @@ export const getTeamPerformanceRankings = async () => {
         todayLeads: rep.todayLeads || 0
       }))
       .sort((a, b) => b.totalLeads - a.totalLeads);
-  }, fallback);
+  }, []);
 };
 
 // Revenue trends data
