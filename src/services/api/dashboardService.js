@@ -75,9 +75,142 @@ const validateUserId = (userId) => {
 };
 
 // Core dashboard metrics from static data
+// Calculate total leads from lead_c table
+export const calculateTotalLeads = async () => {
+  await simulateAPICall();
+  
+  try {
+    const params = {
+      aggregators: [
+        {
+          id: 'totalLeads',
+          fields: [
+            { field: { Name: 'Id' }, Function: 'Count', Alias: 'Count' }
+          ]
+        }
+      ]
+    };
+    
+    const response = await apperClient.fetchRecords('lead_c', params);
+    
+    if (!response.success) {
+      console.error('Error calculating total leads:', response.message);
+      return 0;
+    }
+    
+    // Extract count from aggregation result
+    const aggregationResult = response.aggregations?.find(agg => agg.id === 'totalLeads');
+    return aggregationResult?.value || 0;
+  } catch (error) {
+    console.error('Error calculating total leads:', error);
+    return 0;
+  }
+};
+
+// Calculate conversion rate (leads to deals percentage)
+export const calculateConversionRate = async () => {
+  await simulateAPICall();
+  
+  try {
+    // Get total leads count
+    const totalLeads = await calculateTotalLeads();
+    
+    if (totalLeads === 0) {
+      return 0; // Avoid division by zero
+    }
+    
+    // Get deals count
+    const dealsParams = {
+      aggregators: [
+        {
+          id: 'totalDeals',
+          fields: [
+            { field: { Name: 'Id' }, Function: 'Count', Alias: 'Count' }
+          ]
+        }
+      ]
+    };
+    
+    const dealsResponse = await apperClient.fetchRecords('deal_c', dealsParams);
+    
+    if (!dealsResponse.success) {
+      console.error('Error fetching deals for conversion rate:', dealsResponse.message);
+      return 0;
+    }
+    
+    const dealsCount = dealsResponse.aggregations?.find(agg => agg.id === 'totalDeals')?.value || 0;
+    
+    // Calculate conversion percentage
+    const conversionRate = totalLeads > 0 ? Math.round((dealsCount / totalLeads) * 100) : 0;
+    return Math.min(conversionRate, 100); // Cap at 100%
+  } catch (error) {
+    console.error('Error calculating conversion rate:', error);
+    return 0;
+  }
+};
+
 export const getDashboardMetrics = async () => {
   await simulateAPICall();
   
+  try {
+    // Fetch database metrics and calculated metrics in parallel
+    const [databaseMetrics, totalLeads, conversionRate] = await Promise.all([
+      fetchDatabaseMetrics(),
+      calculateTotalLeads(),
+      calculateConversionRate()
+    ]);
+    
+    // Create dynamic metrics
+    const dynamicMetrics = [
+      {
+        id: 'dynamic-total-leads',
+        title: 'Total Leads',
+        value: totalLeads.toString(),
+        icon: 'Users',
+        trend: 'neutral',
+        trendValue: '0%',
+        color: 'primary'
+      },
+      {
+        id: 'dynamic-conversion-rate',
+        title: 'Conversion Rate',
+        value: `${conversionRate}%`,
+        icon: 'TrendingUp',
+        trend: conversionRate > 15 ? 'up' : 'neutral',
+        trendValue: `${conversionRate}%`,
+        color: conversionRate > 15 ? 'success' : 'primary'
+      }
+    ];
+    
+    // Merge database metrics with dynamic metrics
+    return [...dynamicMetrics, ...databaseMetrics];
+  } catch (error) {
+    console.error('Error fetching dashboard metrics:', error);
+    return [
+      {
+        id: 'fallback-total-leads',
+        title: 'Total Leads',
+        value: '0',
+        icon: 'Users',
+        trend: 'neutral',
+        trendValue: '0%',
+        color: 'primary'
+      },
+      {
+        id: 'fallback-conversion-rate',
+        title: 'Conversion Rate',
+        value: '0%',
+        icon: 'TrendingUp',
+        trend: 'neutral',
+        trendValue: '0%',
+        color: 'primary'
+      }
+    ];
+  }
+};
+
+// Helper function to fetch database metrics
+async function fetchDatabaseMetrics() {
   try {
     const params = {
       fields: [
@@ -95,7 +228,7 @@ export const getDashboardMetrics = async () => {
     const response = await apperClient.fetchRecords('dashboard_metric_c', params);
     
     if (!response.success) {
-      console.error('Error fetching dashboard metrics:', response.message);
+      console.error('Error fetching database metrics:', response.message);
       return [];
     }
     
@@ -109,10 +242,10 @@ export const getDashboardMetrics = async () => {
       color: metric.color_c || 'primary'
     }));
   } catch (error) {
-    console.error('Error fetching dashboard metrics:', error);
+    console.error('Error fetching database metrics:', error);
     return [];
   }
-};
+}
 
 // Recent activity from static data
 export const getRecentActivity = async () => {
