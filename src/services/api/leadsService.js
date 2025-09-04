@@ -250,7 +250,7 @@ export const updateLead = async (id, updates) => {
           
           // Prepare deal data from lead information
           const dealData = {
-            Name: `Deal - ${leadData.Name || 'Unnamed Lead'}`,
+Name: leadData.product_name_c || `Deal - ${leadData.Name || 'Unnamed Lead'}`,
             lead_name_c: leadData.Name || '',
             lead_id_c: leadData.Id?.toString() || id.toString(),
             value_c: leadData.arr_c || 0,

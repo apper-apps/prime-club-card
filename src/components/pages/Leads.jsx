@@ -106,11 +106,12 @@ if (targetStage) {
           } else {
             // Create new deal in the target stage
 const dealData = {
-              name: updatedLead.product_name_c || `${updatedLead.website_url_c.replace('https://', '').replace('www.', '')} - ${updatedLead.category_c}`,
-              leadName: updatedLead.Name || updatedLead.website_url_c.replace('https://', '').replace('www.', ''),
+              name: updatedLead.product_name_c || `Deal - ${updatedLead.Name}`,
+              leadName: updatedLead.Name || '',
               leadId: leadId.toString(),
               value: updatedLead.arr_c || 0,
-              assignedRep: "Unassigned",
+              stage: updatedLead.status_c || "Connected",
+              assignedRep: updatedLead.added_by_name_c || "Unassigned",
               startMonth: new Date().toISOString().split('T')[0],
               endMonth: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
               edition: updatedLead.edition_c || "Select Edition"

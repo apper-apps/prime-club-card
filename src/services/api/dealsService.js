@@ -114,7 +114,7 @@ export const createDeal = async (dealData) => {
     const params = {
       records: [
         {
-          Name: dealData.Name || dealData.name || "",
+Name: dealData.Name || dealData.name || "",
           lead_name_c: dealData.lead_name_c || dealData.leadName || "",
           lead_id_c: dealData.lead_id_c || dealData.leadId || "",
           value_c: parseFloat(dealData.value_c || dealData.value || 0),
@@ -171,7 +171,7 @@ export const updateDeal = async (id, updates) => {
     };
     
     // Map old field names to new database field names
-    if (updates.Name !== undefined || updates.name !== undefined) updateData.Name = updates.Name || updates.name;
+if (updates.Name !== undefined || updates.name !== undefined) updateData.Name = updates.Name || updates.name;
     if (updates.lead_name_c !== undefined || updates.leadName !== undefined) updateData.lead_name_c = updates.lead_name_c || updates.leadName;
     if (updates.lead_id_c !== undefined || updates.leadId !== undefined) updateData.lead_id_c = updates.lead_id_c || updates.leadId;
     if (updates.value_c !== undefined || updates.value !== undefined) updateData.value_c = parseFloat(updates.value_c || updates.value);
