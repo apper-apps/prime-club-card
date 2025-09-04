@@ -226,7 +226,7 @@ export const updateLead = async (id, updates) => {
     
     // Check if status was updated to a qualifying status for deal creation
 const newStatus = updates.status_c || updates.status;
-    const qualifyingStatuses = ["Connected", "Locked", "Meeting Booked", "Meeting Done", "Lost", "Closed", "Negotiation"];
+const qualifyingStatuses = ["Connected", "Locked", "Meeting Booked", "Meeting Done", "Negotiation"];
     
     if (newStatus && qualifyingStatuses.includes(newStatus)) {
       try {

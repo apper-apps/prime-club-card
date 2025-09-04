@@ -75,32 +75,38 @@ const handleStatusChange = async (leadId, newStatus) => {
         )
       );
       
-      // Handle deal pipeline integration for specific statuses
-      if (["Meeting Booked", "Meeting Done", "Negotiation"].includes(newStatus)) {
+// Handle deal pipeline integration for specific statuses
+      if (["Connected", "Locked", "Meeting Booked", "Meeting Done", "Negotiation"].includes(newStatus)) {
         try {
           // Check if deal already exists
           const dealsResponse = await getDeals();
           const existingDeal = dealsResponse?.find(deal => 
-            deal.lead_id === leadId || deal.website_url_c === updatedLead.website_url_c
+            deal.lead_id_c === leadId.toString() || deal.lead_name_c === updatedLead.Name
           );
           
           if (existingDeal) {
             // Update existing deal stage based on status
             const stageMapping = {
+              "Connected": "Qualification",
+              "Locked": "Qualification", 
               "Meeting Booked": "Discovery",
               "Meeting Done": "Proposal",
               "Negotiation": "Negotiation"
             };
-            await updateDeal(existingDeal.Id, { stage: stageMapping[newStatus] });
+            await updateDeal(existingDeal.Id, { stage_c: stageMapping[newStatus] });
           } else {
             // Create new deal
             const dealData = {
-              Name: updatedLead.Name || "New Deal",
-              website_url_c: updatedLead.website_url_c,
-              lead_id: leadId,
-              stage: newStatus === "Meeting Booked" ? "Discovery" : 
-                     newStatus === "Meeting Done" ? "Proposal" : "Negotiation",
-              amount: updatedLead.arr_c || 0
+              Name: `${updatedLead.Name} - ${updatedLead.product_name_c || 'Deal'}`,
+              lead_name_c: updatedLead.Name,
+              lead_id_c: leadId.toString(),
+              value_c: updatedLead.arr_c || 0,
+              stage_c: newStatus === "Connected" ? "Qualification" : 
+                       newStatus === "Locked" ? "Qualification" :
+                       newStatus === "Meeting Booked" ? "Discovery" : 
+                       newStatus === "Meeting Done" ? "Proposal" : "Negotiation",
+              assigned_rep_c: updatedLead.assigned_rep_c || "",
+              edition_c: updatedLead.edition_c || "Select Edition"
             };
             await createDeal(dealData);
           }
