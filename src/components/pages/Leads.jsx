@@ -328,8 +328,8 @@ const handleEmptyRowUpdate = async (tempId, field, value) => {
     )
   );
 
-  // If websiteUrl is provided, create lead(s)
-  if (field === 'websiteUrl' && value.trim()) {
+// If website_url_c is provided, create lead(s)
+  if (field === 'website_url_c' && value.trim()) {
     const emptyRow = emptyRows.find(row => row.Id === tempId);
     if (emptyRow) {
       try {
