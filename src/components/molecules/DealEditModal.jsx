@@ -58,17 +58,17 @@ const DealEditModal = ({ isOpen, onClose, deal, onSave }) => {
     { value: 12, label: "December" }
   ];
 
-  useEffect(() => {
+useEffect(() => {
     if (deal && isOpen) {
       setFormData({
-        name: deal.name || "",
-        leadName: deal.leadName || "",
-        value: deal.value?.toString() || "",
-        stage: deal.stage || "",
-        edition: deal.edition || "",
-        assignedRep: deal.assignedRep || "",
-        startMonth: deal.startMonth?.toString() || "",
-        endMonth: deal.endMonth?.toString() || ""
+        name: deal.Name || "",
+        leadName: deal.lead_name_c || "",
+        value: deal.value_c?.toString() || "",
+        stage: deal.stage_c || "",
+        edition: deal.edition_c || "",
+        assignedRep: deal.assigned_rep_c || "",
+        startMonth: deal.start_month_c?.toString() || "",
+        endMonth: deal.end_month_c?.toString() || ""
       });
       setErrors({});
     }
