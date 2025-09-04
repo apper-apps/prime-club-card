@@ -834,7 +834,7 @@ icon="Building2" /> : <div className="relative">
 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                 Category
                             </th>
-<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]">
                                 LinkedIn
                             </th>
                             <th
@@ -968,7 +968,7 @@ if (e.key === "Enter") {
                                         onCreateCategory={handleCreateCategory}
                                     />
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap min-w-[100px]">
+<td className="px-6 py-4 whitespace-nowrap min-w-[180px]">
 <Input
                                         type="url"
                                         value={emptyRow.linkedin_url_c}
@@ -1173,7 +1173,7 @@ value={lead.category_c}
                                     onCreateCategory={handleCreateCategory}
                                 />
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap min-w-[100px]">
+<td className="px-6 py-4 whitespace-nowrap min-w-[180px]">
                                 <div className="flex items-center gap-2">
                                     <Input
                                         type="url"
