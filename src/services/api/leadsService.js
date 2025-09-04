@@ -204,6 +204,8 @@ export const updateLead = async (id, updates) => {
       throw new Error(response.message);
     }
     
+    let updatedLead = null;
+    
     if (response.results) {
       const successfulUpdates = response.results.filter(result => result.success);
       const failedUpdates = response.results.filter(result => !result.success);
@@ -219,10 +221,57 @@ export const updateLead = async (id, updates) => {
         });
       }
       
-      return successfulUpdates[0]?.data;
+      updatedLead = successfulUpdates[0]?.data;
     }
     
-    return null;
+    // Check if status was updated to a qualifying status for deal creation
+    const newStatus = updates.status_c || updates.status;
+    const qualifyingStatuses = ["Connected", "Locked", "Meeting Booked", "Meeting Done", "Lost", "Closed", "Negotiation"];
+    
+    if (newStatus && qualifyingStatuses.includes(newStatus)) {
+      try {
+        // Get the current lead data to create deal
+        const leadData = await getLeadById(id);
+        
+        if (leadData) {
+          // Import createDeal function dynamically to avoid circular imports
+          const { createDeal } = await import('./dealsService.js');
+          
+          // Map lead status to deal stage
+          const statusToStageMap = {
+            "Connected": "Connected",
+            "Locked": "Locked",
+            "Meeting Booked": "Meeting Booked", 
+            "Meeting Done": "Meeting Done",
+            "Negotiation": "Negotiation",
+            "Lost": "Lost",
+            "Closed": "Closed"
+          };
+          
+          // Prepare deal data from lead information
+          const dealData = {
+            Name: `Deal - ${leadData.Name || 'Unnamed Lead'}`,
+            lead_name_c: leadData.Name || '',
+            lead_id_c: leadData.Id?.toString() || id.toString(),
+            value_c: leadData.arr_c || 0,
+            stage_c: statusToStageMap[newStatus] || newStatus,
+            assigned_rep_c: leadData.added_by_name_c || 'Unassigned',
+            edition_c: leadData.edition_c || 'Select Edition',
+            start_month_c: new Date().getMonth() + 1,
+            end_month_c: (new Date().getMonth() + 13) % 12 || 12
+          };
+          
+          // Create the deal
+          await createDeal(dealData);
+          console.log(`Deal automatically created for lead ${id} with status ${newStatus}`);
+        }
+      } catch (dealError) {
+        // Log deal creation error but don't fail the lead update
+        console.error(`Error creating deal for lead ${id}:`, dealError?.response?.data?.message || dealError.message || dealError);
+      }
+    }
+    
+    return updatedLead;
   } catch (error) {
     if (error?.response?.data?.message) {
       console.error("Error updating lead:", error?.response?.data?.message);
