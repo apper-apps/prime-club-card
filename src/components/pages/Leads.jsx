@@ -105,7 +105,6 @@ if (targetStage) {
             }
           } else {
             // Create new deal in the target stage
-            const dealData = {
 const dealData = {
               name: updatedLead.product_name_c || `${updatedLead.website_url_c.replace('https://', '').replace('www.', '')} - ${updatedLead.category_c}`,
               leadName: updatedLead.Name || updatedLead.website_url_c.replace('https://', '').replace('www.', ''),
@@ -951,8 +950,7 @@ value={emptyRow.arr_c}
                                         onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "arr_c", e.target.value)}
 onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "arr_c", e.target.value)}
                                         onKeyDown={e => {
-onKeyDown={e => {
-                                            if (e.key === "Enter") {
+if (e.key === "Enter") {
                                                 handleEmptyRowUpdate(emptyRow.Id, "arr_c", e.target.value);
                                             }
                                         }}
@@ -1019,13 +1017,12 @@ value={emptyRow.funding_type_c}
 value={emptyRow.follow_up_date_c ? emptyRow.follow_up_date_c.split('T')[0] : ''}
                                         onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "follow_up_date_c", e.target.value ? new Date(e.target.value).toISOString() : '')}
 onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "follow_up_date_c", e.target.value ? new Date(e.target.value).toISOString() : '')}
-                                        onKeyDown={e => {
 onKeyDown={e => {
                                             if (e.key === "Enter") {
                                                 handleEmptyRowUpdate(emptyRow.Id, "follow_up_date_c", e.target.value ? new Date(e.target.value).toISOString() : '');
-1021]                                        type="date"
                                             }
                                         }}
+                                        type="date"
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full placeholder-gray-400 text-sm" />
                                 </td>
                                 <td
@@ -1260,7 +1257,7 @@ handleFieldUpdateDebounced(lead.Id, "follow_up_date_c", newDate);
                                             handleFieldUpdate(lead.Id, "follow_up_date_c", newDate);
                                         }
                                     }}
-                                    className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full text-sm" />
+type="date"
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full text-sm" />
                             </td>
                             <td
