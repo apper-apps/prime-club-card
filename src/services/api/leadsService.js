@@ -225,7 +225,7 @@ export const updateLead = async (id, updates) => {
     }
     
     // Check if status was updated to a qualifying status for deal creation
-    const newStatus = updates.status_c || updates.status;
+const newStatus = updates.status_c || updates.status;
     const qualifyingStatuses = ["Connected", "Locked", "Meeting Booked", "Meeting Done", "Lost", "Closed", "Negotiation"];
     
     if (newStatus && qualifyingStatuses.includes(newStatus)) {
@@ -234,8 +234,20 @@ export const updateLead = async (id, updates) => {
         const leadData = await getLeadById(id);
         
         if (leadData) {
-          // Import createDeal function dynamically to avoid circular imports
-          const { createDeal } = await import('./dealsService.js');
+          // Import getDeals and createDeal functions dynamically to avoid circular imports
+          const { getDeals, createDeal } = await import('./dealsService.js');
+          
+          // Check if a deal already exists for this lead
+          const existingDeals = await getDeals();
+          const existingDeal = existingDeals.find(deal => 
+            deal.lead_id_c === leadData.Id?.toString() || 
+            deal.lead_id_c === id.toString()
+          );
+          
+          if (existingDeal) {
+            console.log(`Deal already exists for lead ${id}, skipping creation`);
+            return;
+          }
           
           // Map lead status to deal stage
           const statusToStageMap = {
@@ -250,7 +262,7 @@ export const updateLead = async (id, updates) => {
           
           // Prepare deal data from lead information
           const dealData = {
-Name: leadData.product_name_c || `Deal - ${leadData.Name || 'Unnamed Lead'}`,
+            Name: leadData.product_name_c || `Deal - ${leadData.Name || 'Unnamed Lead'}`,
             lead_name_c: leadData.Name || '',
             lead_id_c: leadData.Id?.toString() || id.toString(),
             value_c: leadData.arr_c || 0,

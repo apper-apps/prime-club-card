@@ -75,58 +75,45 @@ const handleStatusChange = async (leadId, newStatus) => {
         )
       );
       
-      // Define status-to-stage mapping for common statuses
-      const statusToStageMap = {
-        "Connected": "Connected",
-        "Locked": "Locked", 
-        "Meeting Booked": "Meeting Booked",
-        "Meeting Done": "Meeting Done",
-        "Negotiation": "Negotiation",
-        "Closed Lost": "Lost"
-      };
-      
-      // Check if status maps to a pipeline stage
-      const targetStage = statusToStageMap[newStatus];
-      
-if (targetStage) {
+      // Handle deal pipeline integration for specific statuses
+      if (["Meeting Booked", "Meeting Done", "Negotiation"].includes(newStatus)) {
         try {
-          // Get current deals to check if one exists for this lead
-          const currentDeals = await getDeals();
-          const existingDeal = currentDeals.find(deal => deal.leadId === leadId.toString());
+          // Check if deal already exists
+          const dealsResponse = await getDeals();
+          const existingDeal = dealsResponse?.find(deal => 
+            deal.lead_id === leadId || deal.website_url_c === updatedLead.website_url_c
+          );
           
           if (existingDeal) {
-            // Check if the deal is already in the target stage
-            if (existingDeal.stage === targetStage) {
-              toast.info(`Lead status updated. Deal is already in ${targetStage} stage.`);
-            } else {
-              // Update existing deal to the new stage
-              await updateDeal(existingDeal.Id, { stage: targetStage });
-              toast.success(`Lead status updated and deal moved to ${targetStage} stage!`);
-            }
+            // Update existing deal stage based on status
+            const stageMapping = {
+              "Meeting Booked": "Discovery",
+              "Meeting Done": "Proposal",
+              "Negotiation": "Negotiation"
+            };
+            await updateDeal(existingDeal.Id, { stage: stageMapping[newStatus] });
           } else {
-            // Create new deal in the target stage
-const dealData = {
-              name: updatedLead.product_name_c || `Deal - ${updatedLead.Name}`,
-              leadName: updatedLead.Name || '',
-              leadId: leadId.toString(),
-              value: updatedLead.arr_c || 0,
-              stage: updatedLead.status_c || "Connected",
-              assignedRep: updatedLead.added_by_name_c || "Unassigned",
-              startMonth: new Date().toISOString().split('T')[0],
-              endMonth: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-              edition: updatedLead.edition_c || "Select Edition"
+            // Create new deal
+            const dealData = {
+              Name: updatedLead.Name || "New Deal",
+              website_url_c: updatedLead.website_url_c,
+              lead_id: leadId,
+              stage: newStatus === "Meeting Booked" ? "Discovery" : 
+                     newStatus === "Meeting Done" ? "Proposal" : "Negotiation",
+              amount: updatedLead.arr_c || 0
             };
             await createDeal(dealData);
-            toast.success(`Lead status updated and deal created in ${targetStage} stage!`);
           }
+          toast.success(`Lead status updated and synced with deal pipeline`);
         } catch (dealError) {
           console.error("Failed to handle deal operation:", dealError);
           toast.warning("Lead status updated, but failed to sync with deal pipeline");
         }
       } else {
-        toast.success("Lead status updated successfully!");
+        toast.success(`Lead status updated to ${newStatus}`);
       }
     } catch (err) {
+      console.error("Failed to update lead status:", err);
       toast.error("Failed to update lead status");
     }
   };
