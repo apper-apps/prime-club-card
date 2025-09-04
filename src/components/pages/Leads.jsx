@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { createLead, deleteLead, getLeads, updateLead } from "@/services/api/leadsService";
+import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
-import Card from "@/components/atoms/Card";
-import Button from "@/components/atoms/Button";
-import Badge from "@/components/atoms/Badge";
-import Input from "@/components/atoms/Input";
-import Hotlist from "@/components/pages/Hotlist";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Loading from "@/components/ui/Loading";
-import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
-import { createLead, deleteLead, getLeads, updateLead } from "@/services/api/leadsService";
+import Hotlist from "@/components/pages/Hotlist";
+import Input from "@/components/atoms/Input";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Card from "@/components/atoms/Card";
 
 const Leads = () => {
   const [data, setData] = useState([]);
@@ -38,15 +38,12 @@ const [emptyRows, setEmptyRows] = useState([]);
     loadLeads();
   }, []);
 
-  // Synchronize scrolling between top and bottom scrollbars
-
 const loadLeads = async () => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
       const response = await getLeads();
-      
-      // Handle both old format (direct array) and new format (object with leads and deduplication info)
       if (response.leads) {
         setData(response.leads);
         
@@ -109,15 +106,15 @@ if (targetStage) {
           } else {
             // Create new deal in the target stage
             const dealData = {
-              name: updatedLead.productName || `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
-              leadName: updatedLead.name || updatedLead.websiteUrl.replace('https://', '').replace('www.', ''),
+const dealData = {
+              name: updatedLead.product_name_c || `${updatedLead.website_url_c.replace('https://', '').replace('www.', '')} - ${updatedLead.category_c}`,
+              leadName: updatedLead.Name || updatedLead.website_url_c.replace('https://', '').replace('www.', ''),
               leadId: leadId.toString(),
-              value: updatedLead.arr || 0,
-              stage: targetStage,
+              value: updatedLead.arr_c || 0,
               assignedRep: "Unassigned",
               startMonth: new Date().toISOString().split('T')[0],
               endMonth: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-              edition: updatedLead.edition || "Select Edition"
+              edition: updatedLead.edition_c || "Select Edition"
             };
             await createDeal(dealData);
             toast.success(`Lead status updated and deal created in ${targetStage} stage!`);
@@ -267,18 +264,18 @@ const handleFieldUpdate = async (leadId, field, value) => {
 // Add empty row for new data entry
 const addEmptyRow = () => {
     const newEmptyRow = {
-      Id: nextTempId,
-      name: "",
-      email: "",
-      websiteUrl: "",
-      teamSize: "1-3", 
-      arr: 0,
-      category: "Accounting Software",
-      linkedinUrl: "",
-      status: "Keep an Eye",
-      fundingType: "Bootstrapped",
-      followUpDate: "",
-      productName: "",
+Id: nextTempId,
+      Name: "",
+      email_c: "",
+      website_url_c: "",
+      team_size_c: "1-3", 
+      arr_c: 0,
+      category_c: "Accounting Software",
+      linkedin_url_c: "",
+      status_c: "Keep an Eye",
+      funding_type_c: "Bootstrapped",
+      follow_up_date_c: "",
+      product_name_c: "",
       isEmptyRow: true
     };
     setEmptyRows(prev => [...prev, newEmptyRow]);
@@ -347,18 +344,17 @@ const handleEmptyRowUpdate = async (tempId, field, value) => {
         if (urls.length === 1) {
           // Single URL - existing behavior
 const leadData = {
-            name: emptyRow.name,
-            email: emptyRow.email,
-            websiteUrl: urls[0],
-            teamSize: emptyRow.teamSize,
-            arr: emptyRow.arr,
-            category: emptyRow.category,
-            linkedinUrl: emptyRow.linkedinUrl || `https://linkedin.com/company/${urls[0].replace(/^https?:\/\//, '').replace(/\/$/, '')}`,
-            status: emptyRow.status,
-            fundingType: emptyRow.fundingType,
-            productName: emptyRow.productName
+            Name: emptyRow.Name,
+            email_c: emptyRow.email_c,
+            website_url_c: urls[0],
+            team_size_c: emptyRow.team_size_c,
+            arr_c: emptyRow.arr_c,
+            category_c: emptyRow.category_c,
+            linkedin_url_c: emptyRow.linkedin_url_c || `https://linkedin.com/company/${urls[0].replace(/^https?:\/\//, '').replace(/\/$/, '')}`,
+            status_c: emptyRow.status_c,
+            funding_type_c: emptyRow.funding_type_c,
+            product_name_c: emptyRow.product_name_c
           };
-          
           const newLead = await createLead(leadData);
           setData(prevData => [newLead, ...prevData]);
           
@@ -374,18 +370,17 @@ const leadData = {
           for (const url of urls) {
             try {
 const leadData = {
-                name: emptyRow.name,
-                email: emptyRow.email,
-                websiteUrl: url,
-                teamSize: emptyRow.teamSize,
-                arr: emptyRow.arr,
-                category: emptyRow.category,
-                linkedinUrl: emptyRow.linkedinUrl || `https://linkedin.com/company/${url.replace(/^https?:\/\//, '').replace(/\/$/, '')}`,
-                status: emptyRow.status,
-                fundingType: emptyRow.fundingType,
-                productName: emptyRow.productName
+                Name: emptyRow.Name,
+                email_c: emptyRow.email_c,
+                website_url_c: url,
+                team_size_c: emptyRow.team_size_c,
+                arr_c: emptyRow.arr_c,
+                category_c: emptyRow.category_c,
+                linkedin_url_c: emptyRow.linkedin_url_c || `https://linkedin.com/company/${url.replace(/^https?:\/\//, '').replace(/\/$/, '')}`,
+                status_c: emptyRow.status_c,
+                funding_type_c: emptyRow.funding_type_c,
+                product_name_c: emptyRow.product_name_c
               };
-              
               const newLead = await createLead(leadData);
               successfulLeads.push(newLead);
             } catch (err) {
@@ -595,16 +590,16 @@ const getStatusColor = (status) => {
 const filteredAndSortedData = data
     .filter(lead => {
 const matchesSearch = !searchTerm || 
-        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.websiteUrl.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.teamSize.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
-      const matchesFunding = fundingFilter === "all" || lead.fundingType === fundingFilter;
-      const matchesCategory = categoryFilter === "all" || lead.category === categoryFilter;
-      const matchesTeamSize = teamSizeFilter === "all" || lead.teamSize === teamSizeFilter;
+        lead.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.email_c.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.website_url_c.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.category_c.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.team_size_c.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (lead.product_name_c && lead.product_name_c.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesStatus = statusFilter === "all" || lead.status_c === statusFilter;
+      const matchesFunding = fundingFilter === "all" || lead.funding_type_c === fundingFilter;
+      const matchesCategory = categoryFilter === "all" || lead.category_c === categoryFilter;
+      const matchesTeamSize = teamSizeFilter === "all" || lead.team_size_c === teamSizeFilter;
       
       return matchesSearch && matchesStatus && matchesFunding && matchesCategory && matchesTeamSize;
     })
@@ -612,20 +607,20 @@ const matchesSearch = !searchTerm ||
       let aValue = a[sortBy];
       let bValue = b[sortBy];
       
-      if (sortBy === "arr") {
+if (sortBy === "arr_c") {
         aValue = Number(aValue);
         bValue = Number(bValue);
       }
       
-      if (sortBy === "createdAt") {
+if (sortBy === "CreatedOn") {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
       }
       
-      if (sortBy === "websiteUrl") {
-        // Sort websiteUrl by creation date (newest first) instead of alphabetical
-        aValue = new Date(a.createdAt);
-        bValue = new Date(b.createdAt);
+      if (sortBy === "website_url_c") {
+        // Sort website_url_c by creation date (newest first) instead of alphabetical
+        aValue = new Date(a.CreatedOn);
+        bValue = new Date(b.CreatedOn);
       }
       
       if (sortOrder === "asc") {
@@ -789,72 +784,72 @@ icon="Building2" /> : <div className="relative">
                                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                 />
                             </th>
-<th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                 <button
-                                    onClick={() => handleSort("productName")}
-                                    className="flex items-center gap-1 hover:text-gray-700">Product Name
-                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                    onClick={() => handleSort("product_name_c")}
+                                    className="flex items-center gap-1 hover:text-gray-700">
+                                    Product Name
+                                    <ApperIcon name="ArrowUpDown" size={12} />
                                 </button>
                             </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                 <button
-                                    onClick={() => handleSort("name")}
-                                    className="flex items-center gap-1 hover:text-gray-700">Name
-                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                    onClick={() => handleSort("Name")}
+                                    className="flex items-center gap-1 hover:text-gray-700">
+                                    Name
+                                    <ApperIcon name="ArrowUpDown" size={12} />
                                 </button>
                             </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
                                 <button
-                                    onClick={() => handleSort("email")}
-                                    className="flex items-center gap-1 hover:text-gray-700">Email
-                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                    onClick={() => handleSort("email_c")}
+                                    className="flex items-center gap-1 hover:text-gray-700">
+                                    Email
+                                    <ApperIcon name="ArrowUpDown" size={12} />
                                 </button>
                             </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
                                 <button
-                                    onClick={() => handleSort("websiteUrl")}
-                                    className="flex items-center gap-1 hover:text-gray-700">Website URL
-                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                    onClick={() => handleSort("website_url_c")}
+                                    className="flex items-center gap-1 hover:text-gray-700">
+                                    Website URL
+                                    <ApperIcon name="ArrowUpDown" size={12} />
                                 </button>
                             </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                 <button
-                                    onClick={() => handleSort("teamSize")}
-                                    className="flex items-center gap-1 hover:text-gray-700">Team Size
-                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                    onClick={() => handleSort("team_size_c")}
+                                    className="flex items-center gap-1 hover:text-gray-700">
+                                    Team Size
+                                    <ApperIcon name="ArrowUpDown" size={12} />
                                 </button>
                             </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                 <button
-                                    onClick={() => handleSort("arr")}
-                                    className="flex items-center gap-1 hover:text-gray-700">ARR
-                                                            <ApperIcon name="ArrowUpDown" size={12} />
+                                    onClick={() => handleSort("arr_c")}
+                                    className="flex items-center gap-1 hover:text-gray-700">
+                                    ARR
+                                    <ApperIcon name="ArrowUpDown" size={12} />
                                 </button>
                             </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Category
-                                                    </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">LinkedIn
-                                                    </th>
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                                Category
+                            </th>
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
+                                LinkedIn
+                            </th>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Status
                             </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[140px]">Funding Type
-                                                    </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[130px]">Follow-up Date
-                                                    </th>
-                            <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[120px] sticky right-0 bg-gray-50 border-l border-gray-200">Actions
-                                                    </th>
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[140px]">
+                                Funding Type
+                            </th>
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[130px]">
+                                Follow-up Date
+                            </th>
+<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[120px] sticky right-0 bg-gray-50 border-l border-gray-200">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -869,70 +864,70 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                     />
                                 </td>
 <td className="px-6 py-4 whitespace-nowrap min-w-[120px]">
-                                    <Input
+<Input
                                         type="text"
-                                        value={emptyRow.productName}
+                                        value={emptyRow.product_name_c}
                                         onChange={e => setEmptyRows(prev => prev.map(row => row.Id === emptyRow.Id ? {
                                             ...row,
-                                            productName: e.target.value
+                                            product_name_c: e.target.value
                                         } : row))}
-                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "productName", e.target.value)}
+onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "product_name_c", e.target.value)}
                                         onKeyDown={e => {
-                                            if (e.key === "Enter") {
-                                                handleEmptyRowUpdate(emptyRow.Id, "productName", e.target.value);
+if (e.key === "Enter") {
+                                                handleEmptyRowUpdate(emptyRow.Id, "product_name_c", e.target.value);
                                             }
                                         }}
                                         placeholder="Enter product name..."
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[150px]">
-                                    <Input
+<Input
                                         type="text"
-                                        value={emptyRow.name}
+                                        value={emptyRow.Name}
                                         onChange={e => setEmptyRows(prev => prev.map(row => row.Id === emptyRow.Id ? {
                                             ...row,
-                                            name: e.target.value
+                                            Name: e.target.value
                                         } : row))}
-                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "name", e.target.value)}
+onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "Name", e.target.value)}
                                         onKeyDown={e => {
-                                            if (e.key === "Enter") {
-                                                handleEmptyRowUpdate(emptyRow.Id, "name", e.target.value);
+if (e.key === "Enter") {
+                                                handleEmptyRowUpdate(emptyRow.Id, "Name", e.target.value);
                                             }
                                         }}
                                         placeholder="Enter company name..."
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 font-medium placeholder-gray-400" />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[200px]">
-                                    <Input
+<Input
                                         type="email"
-                                        value={emptyRow.email}
+                                        value={emptyRow.email_c}
                                         onChange={e => setEmptyRows(prev => prev.map(row => row.Id === emptyRow.Id ? {
                                             ...row,
-                                            email: e.target.value
+                                            email_c: e.target.value
                                         } : row))}
-                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "email", e.target.value)}
+onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "email_c", e.target.value)}
                                         onKeyDown={e => {
-                                            if (e.key === "Enter") {
-                                                handleEmptyRowUpdate(emptyRow.Id, "email", e.target.value);
+if (e.key === "Enter") {
+                                                handleEmptyRowUpdate(emptyRow.Id, "email_c", e.target.value);
                                             }
                                         }}
                                         placeholder="Enter email address..."
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[200px]">
-                                    <Input
+<Input
                                         type="url"
-                                        value={emptyRow.websiteUrl}
+                                        value={emptyRow.website_url_c}
                                         detectUrlPrefix={true}
                                         urlPrefix="https://"
                                         onChange={e => setEmptyRows(prev => prev.map(row => row.Id === emptyRow.Id ? {
                                             ...row,
-                                            websiteUrl: e.target.value
+                                            website_url_c: e.target.value
                                         } : row))}
-                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "websiteUrl", e.target.value)}
+onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "website_url_c", e.target.value)}
                                         onKeyDown={e => {
-                                            if (e.key === "Enter") {
-                                                handleEmptyRowUpdate(emptyRow.Id, "websiteUrl", e.target.value);
+if (e.key === "Enter") {
+                                                handleEmptyRowUpdate(emptyRow.Id, "website_url_c", e.target.value);
                                             }
                                         }}
                                         placeholder="Enter website URL..."
@@ -941,8 +936,8 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                 <td
                                     className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[150px]">
                                     <select
-                                        value={emptyRow.teamSize}
-                                        onChange={e => handleEmptyRowUpdate(emptyRow.Id, "teamSize", e.target.value)}
+value={emptyRow.team_size_c}
+                                        onChange={e => handleEmptyRowUpdate(emptyRow.Id, "team_size_c", e.target.value)}
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full text-gray-500">
                                         {teamSizeOptions.map(option => <option key={option} value={option}>{option}</option>)}
                                     </select>
@@ -952,13 +947,13 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                     <Input
                                         type="number"
                                         step="1"
-                                        min="0"
-                                        value={emptyRow.arr}
-                                        onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "arr", e.target.value)}
-                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "arr", e.target.value)}
+value={emptyRow.arr_c}
+                                        onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "arr_c", e.target.value)}
+onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "arr_c", e.target.value)}
                                         onKeyDown={e => {
+onKeyDown={e => {
                                             if (e.key === "Enter") {
-                                                handleEmptyRowUpdate(emptyRow.Id, "arr", e.target.value);
+                                                handleEmptyRowUpdate(emptyRow.Id, "arr_c", e.target.value);
                                             }
                                         }}
                                         placeholder="0"
@@ -966,8 +961,9 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                 </td>
                                 <td
                                     className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[150px]">
-                                    <SearchableSelect
-                                        value={emptyRow.category}
+<SearchableSelect
+                                        value={emptyRow.category_c}
+                                        onChange={(value) => handleEmptyRowUpdate(emptyRow.Id, "category_c", value)}
                                         options={categoryOptions}
                                         placeholder="Select category..."
                                         className="text-gray-500"
@@ -975,14 +971,14 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                     />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[100px]">
-                                    <Input
+<Input
                                         type="url"
-                                        value={emptyRow.linkedinUrl}
-                                        onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "linkedinUrl", e.target.value)}
-                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "linkedinUrl", e.target.value)}
+                                        value={emptyRow.linkedin_url_c}
+                                        onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "linkedin_url_c", e.target.value)}
+onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "linkedin_url_c", e.target.value)}
                                         onKeyDown={e => {
-                                            if (e.key === "Enter") {
-                                                handleEmptyRowUpdate(emptyRow.Id, "linkedinUrl", e.target.value);
+if (e.key === "Enter") {
+                                                handleEmptyRowUpdate(emptyRow.Id, "linkedin_url_c", e.target.value);
                                             }
                                         }}
                                         placeholder="LinkedIn URL..."
@@ -991,13 +987,13 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[150px]">
                                     <div className="relative">
                                         <Badge
-                                            variant={getStatusColor(emptyRow.status)}
+variant={getStatusColor(emptyRow.status_c)}
                                             className="cursor-pointer hover:shadow-md transition-shadow opacity-60">
-                                            {emptyRow.status}
+                                            {emptyRow.status_c}
                                         </Badge>
                                         <select
-                                            value={emptyRow.status}
-                                            onChange={e => handleEmptyRowUpdate(emptyRow.Id, "status", e.target.value)}
+value={emptyRow.status_c}
+                                            onChange={e => handleEmptyRowUpdate(emptyRow.Id, "status_c", e.target.value)}
                                             className="absolute inset-0 opacity-0 cursor-pointer w-full">
                                             {statusOptions.map(option => <option key={option} value={option}>{option}</option>)}
                                         </select>
@@ -1006,13 +1002,13 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[140px]">
                                     <div className="relative">
                                         <Badge
-                                            variant={emptyRow.fundingType === "Series C" ? "primary" : "default"}
+variant={emptyRow.funding_type_c === "Series C" ? "primary" : "default"}
                                             className="cursor-pointer hover:shadow-md transition-shadow opacity-60">
-                                            {emptyRow.fundingType}
+                                            {emptyRow.funding_type_c}
                                         </Badge>
                                         <select
-                                            value={emptyRow.fundingType}
-                                            onChange={e => handleEmptyRowUpdate(emptyRow.Id, "fundingType", e.target.value)}
+value={emptyRow.funding_type_c}
+                                            onChange={e => handleEmptyRowUpdate(emptyRow.Id, "funding_type_c", e.target.value)}
                                             className="absolute inset-0 opacity-0 cursor-pointer w-full">
                                             {fundingTypeOptions.map(option => <option key={option} value={option}>{option}</option>)}
                                         </select>
@@ -1020,13 +1016,14 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap min-w-[130px]">
                                     <Input
-                                        type="date"
-                                        value={emptyRow.followUpDate ? emptyRow.followUpDate.split('T')[0] : ''}
-                                        onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "followUpDate", e.target.value ? new Date(e.target.value).toISOString() : '')}
-                                        onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "followUpDate", e.target.value ? new Date(e.target.value).toISOString() : '')}
+value={emptyRow.follow_up_date_c ? emptyRow.follow_up_date_c.split('T')[0] : ''}
+                                        onChange={e => handleEmptyRowUpdateDebounced(emptyRow.Id, "follow_up_date_c", e.target.value ? new Date(e.target.value).toISOString() : '')}
+onBlur={e => handleEmptyRowUpdate(emptyRow.Id, "follow_up_date_c", e.target.value ? new Date(e.target.value).toISOString() : '')}
                                         onKeyDown={e => {
+onKeyDown={e => {
                                             if (e.key === "Enter") {
-                                                handleEmptyRowUpdate(emptyRow.Id, "followUpDate", e.target.value ? new Date(e.target.value).toISOString() : '');
+                                                handleEmptyRowUpdate(emptyRow.Id, "follow_up_date_c", e.target.value ? new Date(e.target.value).toISOString() : '');
+1021]                                        type="date"
                                             }
                                         }}
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full placeholder-gray-400 text-sm" />
@@ -1055,84 +1052,84 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                 />
                             </td>
 <td className="px-6 py-4 whitespace-nowrap min-w-[120px]">
-                                <Input
+<Input
                                     type="text"
-                                    value={lead.productName || ""}
+                                    value={lead.product_name_c || ""}
                                     onChange={e => {
                                         setData(prevData => prevData.map(l => l.Id === lead.Id ? {
                                             ...l,
-                                            productName: e.target.value
+                                            product_name_c: e.target.value
                                         } : l));
 
-                                        handleFieldUpdateDebounced(lead.Id, "productName", e.target.value);
+handleFieldUpdateDebounced(lead.Id, "product_name_c", e.target.value);
                                     }}
-                                    onBlur={e => handleFieldUpdate(lead.Id, "productName", e.target.value)}
+                                    onBlur={e => handleFieldUpdate(lead.Id, "product_name_c", e.target.value)}
                                     onKeyDown={e => {
-                                        if (e.key === "Enter") {
-                                            handleFieldUpdate(lead.Id, "productName", e.target.value);
+if (e.key === "Enter") {
+                                            handleFieldUpdate(lead.Id, "product_name_c", e.target.value);
                                         }
                                     }}
                                     placeholder="Enter product name..."
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 placeholder-gray-400" />
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap min-w-[150px]">
-                                <Input
+<Input
                                     type="text"
-                                    value={lead.name || ""}
+                                    value={lead.Name || ""}
                                     onChange={e => {
                                         setData(prevData => prevData.map(l => l.Id === lead.Id ? {
                                             ...l,
-                                            name: e.target.value
+                                            Name: e.target.value
                                         } : l));
 
-                                        handleFieldUpdateDebounced(lead.Id, "name", e.target.value);
+handleFieldUpdateDebounced(lead.Id, "Name", e.target.value);
                                     }}
-                                    onBlur={e => handleFieldUpdate(lead.Id, "name", e.target.value)}
+                                    onBlur={e => handleFieldUpdate(lead.Id, "Name", e.target.value)}
                                     onKeyDown={e => {
-                                        if (e.key === "Enter") {
-                                            handleFieldUpdate(lead.Id, "name", e.target.value);
+if (e.key === "Enter") {
+                                            handleFieldUpdate(lead.Id, "Name", e.target.value);
                                         }
                                     }}
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900 font-medium" />
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap min-w-[200px]">
-                                <Input
+<Input
                                     type="email"
-                                    value={lead.email || ""}
+                                    value={lead.email_c || ""}
                                     onChange={e => {
                                         setData(prevData => prevData.map(l => l.Id === lead.Id ? {
                                             ...l,
-                                            email: e.target.value
+                                            email_c: e.target.value
                                         } : l));
 
-                                        handleFieldUpdateDebounced(lead.Id, "email", e.target.value);
+handleFieldUpdateDebounced(lead.Id, "email_c", e.target.value);
                                     }}
-                                    onBlur={e => handleFieldUpdate(lead.Id, "email", e.target.value)}
+                                    onBlur={e => handleFieldUpdate(lead.Id, "email_c", e.target.value)}
                                     onKeyDown={e => {
-                                        if (e.key === "Enter") {
-                                            handleFieldUpdate(lead.Id, "email", e.target.value);
+if (e.key === "Enter") {
+                                            handleFieldUpdate(lead.Id, "email_c", e.target.value);
                                         }
                                     }}
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-gray-900" />
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap min-w-[200px]">
-                                <Input
+<Input
                                     type="url"
-                                    value={lead.websiteUrl}
+                                    value={lead.website_url_c}
                                     detectUrlPrefix={true}
                                     urlPrefix="https://"
                                     onChange={e => {
                                         setData(prevData => prevData.map(l => l.Id === lead.Id ? {
                                             ...l,
-                                            websiteUrl: e.target.value
+                                            website_url_c: e.target.value
                                         } : l));
 
-                                        handleFieldUpdateDebounced(lead.Id, "websiteUrl", e.target.value);
+handleFieldUpdateDebounced(lead.Id, "website_url_c", e.target.value);
                                     }}
-                                    onBlur={e => handleFieldUpdate(lead.Id, "websiteUrl", e.target.value)}
+                                    onBlur={e => handleFieldUpdate(lead.Id, "website_url_c", e.target.value)}
                                     onKeyDown={e => {
-                                        if (e.key === "Enter") {
-                                            handleFieldUpdate(lead.Id, "websiteUrl", e.target.value);
+if (e.key === "Enter") {
+                                            handleFieldUpdate(lead.Id, "website_url_c", e.target.value);
                                         }
                                     }}
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-primary-600 font-medium" />
@@ -1140,8 +1137,8 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                             <td
                                 className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[150px]">
                                 <select
-                                    value={lead.teamSize}
-                                    onChange={e => handleFieldUpdate(lead.Id, "teamSize", e.target.value)}
+value={lead.team_size_c}
+                                    onChange={e => handleFieldUpdate(lead.Id, "team_size_c", e.target.value)}
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full">
                                     {teamSizeOptions.map(option => <option key={option} value={option}>{option}</option>)}
                                 </select>
@@ -1152,19 +1149,19 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                     type="number"
                                     step="1"
                                     min="0"
-                                    value={lead.arr}
+value={lead.arr_c}
                                     onChange={e => {
                                         setData(prevData => prevData.map(l => l.Id === lead.Id ? {
                                             ...l,
-                                            arr: Number(e.target.value)
+                                            arr_c: Number(e.target.value)
                                         } : l));
 
-                                        handleFieldUpdateDebounced(lead.Id, "arr", e.target.value);
+handleFieldUpdateDebounced(lead.Id, "arr_c", e.target.value);
                                     }}
-                                    onBlur={e => handleFieldUpdate(lead.Id, "arr", e.target.value)}
+                                    onBlur={e => handleFieldUpdate(lead.Id, "arr_c", e.target.value)}
                                     onKeyDown={e => {
-                                        if (e.key === "Enter") {
-                                            handleFieldUpdate(lead.Id, "arr", e.target.value);
+if (e.key === "Enter") {
+                                            handleFieldUpdate(lead.Id, "arr_c", e.target.value);
                                         }
                                     }}
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full" />
@@ -1172,8 +1169,8 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                             <td
                                 className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[150px]">
                                 <SearchableSelect
-                                    value={lead.category}
-                                    onChange={(value) => handleFieldUpdate(lead.Id, "category", value)}
+value={lead.category_c}
+                                    onChange={(value) => handleFieldUpdate(lead.Id, "category_c", value)}
                                     options={categoryOptions}
                                     placeholder="Select category..."
                                     onCreateCategory={handleCreateCategory}
@@ -1183,26 +1180,26 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                                 <div className="flex items-center gap-2">
                                     <Input
                                         type="url"
-                                        value={lead.linkedinUrl}
+value={lead.linkedin_url_c}
                                         onChange={e => {
                                             setData(prevData => prevData.map(l => l.Id === lead.Id ? {
                                                 ...l,
-                                                linkedinUrl: e.target.value
+                                                linkedin_url_c: e.target.value
                                             } : l));
 
-                                            handleFieldUpdateDebounced(lead.Id, "linkedinUrl", e.target.value);
+handleFieldUpdateDebounced(lead.Id, "linkedin_url_c", e.target.value);
                                         }}
-                                        onBlur={e => handleFieldUpdate(lead.Id, "linkedinUrl", e.target.value)}
+                                        onBlur={e => handleFieldUpdate(lead.Id, "linkedin_url_c", e.target.value)}
                                         onKeyDown={e => {
-                                            if (e.key === "Enter") {
-                                                handleFieldUpdate(lead.Id, "linkedinUrl", e.target.value);
+if (e.key === "Enter") {
+                                                handleFieldUpdate(lead.Id, "linkedin_url_c", e.target.value);
                                             }
                                         }}
                                         placeholder="LinkedIn URL..."
                                         className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full placeholder-gray-400 text-sm flex-1" />
-                                    {lead.linkedinUrl && (
+{lead.linkedin_url_c && (
                                         <a
-                                            href={lead.linkedinUrl}
+                                            href={lead.linkedin_url_c}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-primary-600 hover:text-primary-800 flex-shrink-0 p-1 hover:bg-gray-100 rounded"
@@ -1215,12 +1212,12 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                             <td className="px-6 py-4 whitespace-nowrap min-w-[150px]">
                                 <div className="relative">
                                     <Badge
-                                        variant={getStatusColor(lead.status)}
+variant={getStatusColor(lead.status_c)}
                                         className="cursor-pointer hover:shadow-md transition-shadow">
-                                        {lead.status}
+                                        {lead.status_c}
                                     </Badge>
                                     <select
-                                        value={lead.status}
+value={lead.status_c}
                                         onChange={e => handleStatusChange(lead.Id, e.target.value)}
                                         className="absolute inset-0 opacity-0 cursor-pointer w-full">
                                         {statusOptions.map(option => <option key={option} value={option}>{option}</option>)}
@@ -1230,13 +1227,13 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                             <td className="px-6 py-4 whitespace-nowrap min-w-[140px]">
                                 <div className="relative">
                                     <Badge
-                                        variant={lead.fundingType === "Series C" ? "primary" : "default"}
+variant={lead.funding_type_c === "Series C" ? "primary" : "default"}
                                         className="cursor-pointer hover:shadow-md transition-shadow">
-                                        {lead.fundingType}
+                                        {lead.funding_type_c}
                                     </Badge>
                                     <select
-                                        value={lead.fundingType}
-                                        onChange={e => handleFieldUpdate(lead.Id, "fundingType", e.target.value)}
+value={lead.funding_type_c}
+                                        onChange={e => handleFieldUpdate(lead.Id, "funding_type_c", e.target.value)}
                                         className="absolute inset-0 opacity-0 cursor-pointer w-full">
                                         {fundingTypeOptions.map(option => <option key={option} value={option}>{option}</option>)}
                                     </select>
@@ -1244,27 +1241,26 @@ emptyRow => <tr key={`empty-${emptyRow.Id}`} className="hover:bg-gray-50 empty-r
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap min-w-[130px]">
                                 <Input
-                                    type="date"
-                                    value={lead.followUpDate ? lead.followUpDate.split('T')[0] : ''}
+value={lead.follow_up_date_c ? lead.follow_up_date_c.split('T')[0] : ''}
                                     onChange={e => {
                                         const newDate = e.target.value ? new Date(e.target.value).toISOString() : '';
                                         setData(prevData => prevData.map(l => l.Id === lead.Id ? {
                                             ...l,
-                                            followUpDate: newDate
+                                            follow_up_date_c: newDate
                                         } : l));
-
-                                        handleFieldUpdateDebounced(lead.Id, "followUpDate", newDate);
-                                    }}
+handleFieldUpdateDebounced(lead.Id, "follow_up_date_c", newDate);
+}}
                                     onBlur={e => {
                                         const newDate = e.target.value ? new Date(e.target.value).toISOString() : '';
-                                        handleFieldUpdate(lead.Id, "followUpDate", newDate);
+                                        handleFieldUpdate(lead.Id, "follow_up_date_c", newDate);
                                     }}
                                     onKeyDown={e => {
                                         if (e.key === "Enter") {
                                             const newDate = e.target.value ? new Date(e.target.value).toISOString() : '';
-                                            handleFieldUpdate(lead.Id, "followUpDate", newDate);
+                                            handleFieldUpdate(lead.Id, "follow_up_date_c", newDate);
                                         }
                                     }}
+                                    className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full text-sm" />
                                     className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full text-sm" />
                             </td>
                             <td
@@ -1542,25 +1538,25 @@ const SearchableSelect = ({ value, onChange, options, placeholder = "Select...",
 
 const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) => {
 const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    websiteUrl: "",
-    teamSize: "1-3",
-    arr: "",
-    category: "",
-    linkedinUrl: "",
-    status: "Keep an Eye",
-    fundingType: "Bootstrapped",
-    followUpDate: "",
-    edition: "Select Edition",
-    productName: ""
+    Name: "",
+    email_c: "",
+    website_url_c: "",
+    team_size_c: "1-3",
+    arr_c: "",
+    category_c: "",
+    linkedin_url_c: "",
+    status_c: "Keep an Eye",
+    funding_type_c: "Bootstrapped",
+    follow_up_date_c: "",
+    edition_c: "Select Edition",
+    product_name_c: ""
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit({
-      ...formData,
-      arr: Number(formData.arr)
+...formData,
+      arr_c: Number(formData.arr_c)
     });
   };
 
@@ -1580,8 +1576,8 @@ return (
             </label>
             <Input
               type="text"
-              value={formData.productName}
-              onChange={(e) => setFormData({...formData, productName: e.target.value})}
+value={formData.product_name_c}
+              onChange={(e) => setFormData({...formData, product_name_c: e.target.value})}
               placeholder="Enter product name"
               className="w-full"
             />
@@ -1593,8 +1589,8 @@ return (
               </label>
               <Input
                 type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+value={formData.Name}
+                onChange={(e) => setFormData({...formData, Name: e.target.value})}
                 placeholder="Acme Corp"
                 className="w-full"
                 required
@@ -1606,8 +1602,8 @@ return (
               </label>
               <Input
                 type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
+value={formData.email_c}
+                onChange={(e) => setFormData({...formData, email_c: e.target.value})}
                 placeholder="partnerships@acme.com"
                 className="w-full"
                 required
@@ -1620,10 +1616,10 @@ return (
             </label>
             <Input
               type="url"
-              value={formData.websiteUrl}
+value={formData.website_url_c}
               detectUrlPrefix={true}
               urlPrefix="https://"
-              onChange={(e) => setFormData({...formData, websiteUrl: e.target.value})}
+              onChange={(e) => setFormData({...formData, website_url_c: e.target.value})}
               placeholder="https://example.com"
               className="w-full"
               required
@@ -1635,8 +1631,8 @@ return (
                 Team Size
               </label>
               <select
-                value={formData.teamSize}
-                onChange={(e) => setFormData({...formData, teamSize: e.target.value})}
+value={formData.team_size_c}
+                onChange={(e) => setFormData({...formData, team_size_c: e.target.value})}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
               >
                 <option value="1-3">1-3</option>
@@ -1653,8 +1649,8 @@ return (
               </label>
               <Input
                 type="number"
-                value={formData.arr}
-                onChange={(e) => setFormData({...formData, arr: e.target.value})}
+value={formData.arr_c}
+                onChange={(e) => setFormData({...formData, arr_c: e.target.value})}
                 placeholder="150000"
                 className="w-full"
                 required
@@ -1667,8 +1663,8 @@ return (
             </label>
             <div className="relative">
               <SearchableSelect
-                value={formData.category}
-                onChange={(value) => setFormData({...formData, category: value})}
+value={formData.category_c}
+                onChange={(value) => setFormData({...formData, category_c: value})}
                 options={categoryOptions}
                 placeholder="Select category..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -1682,8 +1678,8 @@ return (
             </label>
             <Input
               type="url"
-              value={formData.linkedinUrl}
-              onChange={(e) => setFormData({...formData, linkedinUrl: e.target.value})}
+value={formData.linkedin_url_c}
+              onChange={(e) => setFormData({...formData, linkedin_url_c: e.target.value})}
               placeholder="https://linkedin.com/company/example"
               className="w-full"
               required
@@ -1695,8 +1691,8 @@ return (
                 Status
               </label>
               <select
-                value={formData.status}
-                onChange={(e) => setFormData({...formData, status: e.target.value})}
+value={formData.status_c}
+                onChange={(e) => setFormData({...formData, status_c: e.target.value})}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
               >
                 <option value="Launched on AppSumo">Launched on AppSumo</option>
@@ -1720,8 +1716,8 @@ return (
                 Funding Type
               </label>
               <select
-                value={formData.fundingType}
-                onChange={(e) => setFormData({...formData, fundingType: e.target.value})}
+value={formData.funding_type_c}
+                onChange={(e) => setFormData({...formData, funding_type_c: e.target.value})}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
               >
                 <option value="Bootstrapped">Bootstrapped</option>
@@ -1740,8 +1736,8 @@ return (
             </label>
             <Input
               type="date"
-              value={formData.followUpDate ? formData.followUpDate.split('T')[0] : ''}
-              onChange={(e) => setFormData({...formData, followUpDate: e.target.value ? new Date(e.target.value).toISOString() : ''})}
+value={formData.follow_up_date_c ? formData.follow_up_date_c.split('T')[0] : ''}
+              onChange={(e) => setFormData({...formData, follow_up_date_c: e.target.value ? new Date(e.target.value).toISOString() : ''})}
               className="w-full"
             />
           </div>
@@ -1750,8 +1746,8 @@ return (
               Edition
             </label>
             <select
-              value={formData.edition}
-              onChange={(e) => setFormData({...formData, edition: e.target.value})}
+value={formData.edition_c}
+              onChange={(e) => setFormData({...formData, edition_c: e.target.value})}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
             >
               <option value="Select Edition">Select Edition</option>
@@ -1775,25 +1771,25 @@ return (
 };
 
 const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCategory }) => {
-  const [formData, setFormData] = useState({
-name: lead.name,
-    email: lead.email,
-    websiteUrl: lead.websiteUrl,
-    teamSize: lead.teamSize,
-    arr: lead.arr.toString(),
-    category: lead.category,
-    linkedinUrl: lead.linkedinUrl,
-    status: lead.status,
-    fundingType: lead.fundingType,
-    edition: lead.edition || "Select Edition",
-    productName: lead.productName || ""
+const [formData, setFormData] = useState({
+Name: lead.Name,
+    email_c: lead.email_c,
+    website_url_c: lead.website_url_c,
+    team_size_c: lead.team_size_c,
+    arr_c: lead.arr_c.toString(),
+    category_c: lead.category_c,
+    linkedin_url_c: lead.linkedin_url_c,
+    status_c: lead.status_c,
+    funding_type_c: lead.funding_type_c,
+    edition_c: lead.edition_c || "Select Edition",
+    product_name_c: lead.product_name_c || ""
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(lead.Id, {
-      ...formData,
-      arr: Number(formData.arr)
+...formData,
+      arr_c: Number(formData.arr_c)
     });
   };
 
@@ -1811,10 +1807,10 @@ return (
                 <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
                 <Input
                     type="text"
-                    value={formData.productName}
+value={formData.product_name_c}
                     onChange={e => setFormData({
                         ...formData,
-                        productName: e.target.value
+                        product_name_c: e.target.value
                     })}
                     placeholder="Enter product name"
                     className="w-full"
@@ -1825,10 +1821,10 @@ return (
 <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
                     <Input
                         type="text"
-                        value={formData.name}
+value={formData.Name}
                         onChange={e => setFormData({
                             ...formData,
-                            name: e.target.value
+                            Name: e.target.value
                         })}
                         className="w-full"
                         required />
@@ -1837,10 +1833,10 @@ return (
                     <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                     <Input
                         type="email"
-                        value={formData.email}
+value={formData.email_c}
                         onChange={e => setFormData({
                             ...formData,
-                            email: e.target.value
+                            email_c: e.target.value
                         })}
                         className="w-full"
                         required />
@@ -1850,12 +1846,12 @@ return (
                 <label className="block text-sm font-medium text-gray-700 mb-2">Website URL</label>
                 <Input
                     type="url"
-                    value={formData.websiteUrl}
+value={formData.website_url_c}
                     detectUrlPrefix={true}
                     urlPrefix="https://"
                     onChange={e => setFormData({
                         ...formData,
-                        websiteUrl: e.target.value
+                        website_url_c: e.target.value
                     })}
                     className="w-full"
                     required />
@@ -1864,10 +1860,10 @@ return (
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Team Size</label>
                     <select
-                        value={formData.teamSize}
+value={formData.team_size_c}
                         onChange={e => setFormData({
                             ...formData,
-                            teamSize: e.target.value
+                            team_size_c: e.target.value
                         })}
                         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                         <option value="1-3">1-3</option>
@@ -1882,10 +1878,10 @@ return (
                     <label className="block text-sm font-medium text-gray-700 mb-2">ARR (USD)</label>
                     <Input
                         type="number"
-                        value={formData.arr}
+value={formData.arr_c}
                         onChange={e => setFormData({
                             ...formData,
-                            arr: e.target.value
+                            arr_c: e.target.value
                         })}
                         className="w-full"
                         required />
@@ -1895,10 +1891,10 @@ return (
                 <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                 <div className="relative">
                     <SearchableSelect
-                        value={formData.category}
+value={formData.category_c}
                         onChange={(value) => setFormData({
                             ...formData,
-                            category: value
+                            category_c: value
                         })}
                         options={categoryOptions}
                         placeholder="Select category..."
@@ -1911,10 +1907,10 @@ return (
                 <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn URL</label>
                 <Input
                     type="url"
-                    value={formData.linkedinUrl}
+value={formData.linkedin_url_c}
                     onChange={e => setFormData({
                         ...formData,
-                        linkedinUrl: e.target.value
+                        linkedin_url_c: e.target.value
                     })}
                     className="w-full"
                     required />
@@ -1923,10 +1919,10 @@ return (
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                     <select
-                        value={formData.status}
+value={formData.status_c}
                         onChange={e => setFormData({
                             ...formData,
-                            status: e.target.value
+                            status_c: e.target.value
                         })}
                         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                         <option value="Launched on AppSumo">Launched on AppSumo</option>
@@ -1948,10 +1944,10 @@ return (
 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Funding Type</label>
                     <select
-                        value={formData.fundingType}
+value={formData.funding_type_c}
                         onChange={e => setFormData({
                             ...formData,
-                            fundingType: e.target.value
+                            funding_type_c: e.target.value
                         })}
                         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                         <option value="Bootstrapped">Bootstrapped</option>
@@ -1967,10 +1963,10 @@ return (
 <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Edition</label>
                 <select
-                    value={formData.edition}
+value={formData.edition_c}
                     onChange={e => setFormData({
                         ...formData,
-                        edition: e.target.value
+                        edition_c: e.target.value
                     })}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="Select Edition">Select Edition</option>
